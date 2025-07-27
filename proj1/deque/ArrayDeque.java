@@ -1,10 +1,10 @@
 package deque;
 
-public class ArrayDeque <T> {
+public class ArrayDeque<T> {
     private T[] items;
     // private int size;
-    public int head;
-    public int tail;
+    private int head;
+    private int tail;
 
     public ArrayDeque() {
         items = (T[]) new Object[8];
@@ -17,15 +17,15 @@ public class ArrayDeque <T> {
         items = (T[]) new Object[8];
         head = 0;
         tail = 0;
-        for (int i = 0; i < other.size(); i ++) {
-            addLast((T)other.get(i));
+        for (int i = 0; i < other.size(); i++) {
+            addLast((T) other.get(i));
         }
     }
 
-    private int move(int p, int step){
+    private int move(int p, int step) {
         if (p + step > items.length) {
             return p + step - items.length;
-        } else if (p + step < 0){
+        } else if (p + step < 0) {
             return p + step + items.length;
         } else {
             return p + step;
@@ -33,29 +33,33 @@ public class ArrayDeque <T> {
     }
 
     private void resize(int l) {
-        T[] new_array = (T[]) new Object[l];
+        T[] newArray = (T[]) new Object[l];
         int s = size();
-        for (int i = 0, p = head; i < size(); i++, p++) {
+        int p = head;
+        for (int i = 0; i < size(); i++) {
             if (p >= items.length) {
                 p -= items.length;
             }
-            new_array[i] = items[p];
+            newArray[i] = items[p];
+            p++;
         }
         head = 0;
         tail = s;
-        items = new_array;
+        items = newArray;
     }
 
     public void addFirst(T item) {
-        if (size() == items.length)
+        if (size() == items.length) {
             resize(items.length * 2);
+        }
         head = move(head, -1);
         items[head] = item;
     }
 
     public void addLast(T item) {
-        if (size() == items.length)
+        if (size() == items.length) {
             resize(items.length * 2);
+        }
         items[tail] = item;
         tail = move(tail, 1);
     }
@@ -83,7 +87,8 @@ public class ArrayDeque <T> {
     }
 
     private void checkUsage() {
-        while (items.length / size() > 4 && items.length >= 16) {
+        int minimumLength = 8;
+        while (items.length / size() > 4 && items.length > minimumLength) {
             resize(items.length / 2);
         }
     }
@@ -112,9 +117,6 @@ public class ArrayDeque <T> {
         }
     }
 
-
     public static void main(String[] args) {
-
     }
-
 }
