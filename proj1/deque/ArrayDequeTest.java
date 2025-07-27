@@ -105,8 +105,13 @@ public class ArrayDequeTest {
         d2.removeLast();
         assertEquals(15, d2.size());
         assertEquals(16, d1.size());
+    }
 
-
-
+    @Test
+    public void isEmptyTest() {
+        ArrayDeque<Integer> d = new ArrayDeque<>();
+        assertTrue(d.isEmpty());
+        d.addLast(1);
+        assertFalse(d.isEmpty());
     }
 }

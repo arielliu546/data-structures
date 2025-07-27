@@ -61,6 +61,9 @@ public class ArrayDeque <T> {
     }
 
     public T removeFirst() {
+        if (isEmpty()) {
+            return null;
+        }
         T t = items[head];
         items[head] = null;
         head = move(head, 1);
@@ -69,6 +72,9 @@ public class ArrayDeque <T> {
     }
 
     public T removeLast() {
+        if (isEmpty()) {
+            return null;
+        }
         T t = items[tail - 1];
         items[tail - 1] = null;
         tail = move(tail, -1);
