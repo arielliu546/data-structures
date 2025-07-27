@@ -75,9 +75,9 @@ public class ArrayDeque <T> {
         if (isEmpty()) {
             return null;
         }
+        tail = move(tail, -1);
         T t = items[tail - 1];
         items[tail - 1] = null;
-        tail = move(tail, -1);
         checkUsage();
         return t;
     }
