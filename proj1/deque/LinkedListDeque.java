@@ -1,11 +1,11 @@
 package deque;
 
-public class LinkedListDeque <T> {
+public class LinkedListDeque<T> {
     private Node sentinel;
     private int size;
 
     private class Node {
-        public T value;
+        private T value;
         public Node prev;
         public Node next;
 

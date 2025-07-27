@@ -114,4 +114,28 @@ public class ArrayDequeTest {
         d.addLast(1);
         assertFalse(d.isEmpty());
     }
+
+    @Test
+    public void sizeTest() {
+        ArrayDeque<Integer> d = new ArrayDeque<>();
+        assertTrue(d.isEmpty());
+        for (int i = 0; i < 4; i ++) {
+            d.addLast(1);
+            assertEquals(1 + i * 2, d.size());
+            d.addFirst(1);
+            assertEquals(2 + i * 2, d.size());
+            assertFalse(d.isEmpty());
+        }
+        d.removeLast();
+        d.removeLast();
+        assertFalse(d.isEmpty());
+
+        for (int i = 0; i < 3; i ++) {
+            d.removeLast();
+            d.removeFirst();
+        }
+        assertTrue(d.isEmpty());
+
+
+    }
 }

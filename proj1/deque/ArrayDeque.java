@@ -2,7 +2,7 @@ package deque;
 
 public class ArrayDeque<T> {
     private T[] items;
-    // private int size;
+    private int size;
     private int head;
     private int tail;
 
@@ -10,7 +10,7 @@ public class ArrayDeque<T> {
         items = (T[]) new Object[8];
         head = 0; // points to the starting valued bit
         tail = 0; // points to the bit after the first value
-        // size can be deducted with head and tail.
+        size = 0;
     }
 
     public ArrayDeque(ArrayDeque other) {
@@ -54,6 +54,7 @@ public class ArrayDeque<T> {
         }
         head = move(head, -1);
         items[head] = item;
+        size++;
     }
 
     public void addLast(T item) {
@@ -62,6 +63,7 @@ public class ArrayDeque<T> {
         }
         items[tail] = item;
         tail = move(tail, 1);
+        size++;
     }
 
     public T removeFirst() {
@@ -71,6 +73,7 @@ public class ArrayDeque<T> {
         T t = items[head];
         items[head] = null;
         head = move(head, 1);
+        size--;
         checkUsage();
         return t;
     }
@@ -82,41 +85,38 @@ public class ArrayDeque<T> {
         tail = move(tail, -1);
         T t = items[tail];
         items[tail] = null;
+        size--;
         checkUsage();
         return t;
     }
 
     private void checkUsage() {
         int minimumLength = 8;
-        while (items.length / size() > 4 && items.length > minimumLength) {
+        while ( size() / items.length < 1 / 4 && items.length > minimumLength) {
             resize(items.length / 2);
         }
     }
 
     public T get(int index) {
-       return items[move(index, head)];
+        return items[move(index, head)];
     }
 
     public int size() {
-        int m = tail - head;
-        if (m >= 0) {
-            return m;
-        } else {
-            return items.length + m;
-        }
+        return size;
     }
 
-    public boolean isEmpty() { return size() == 0; }
+    public boolean isEmpty() {
+        return size == 0;
+    }
 
     public void printDeque() {
-        for (int i = 0, p = head; i < size(); i++, p++) {
+        int p = head;
+        for (int i = 0; i < size(); i++) {
             if (p >= items.length) {
                 p -= items.length;
             }
             System.out.print(items[p]);
+            p++;
         }
-    }
-
-    public static void main(String[] args) {
     }
 }
