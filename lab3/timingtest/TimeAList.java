@@ -57,7 +57,7 @@ public class TimeAList {
         AList<Double> times = new AList<Double>();
         AList<Integer> opCounts = new AList<Integer>();
 
-        int[] list = new int[]{1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000, 10000000};
+        int[] list = new int[]{1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000};
         for (int j : list) {
             processTimeData(j, Ns, times, opCounts);
         }
