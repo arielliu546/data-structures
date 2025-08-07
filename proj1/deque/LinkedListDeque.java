@@ -11,7 +11,7 @@ public class LinkedListDeque<T>  implements Deque<T>, Iterable<T>  {
         private Node prev;
         private Node next;
 
-        public Node(Node p, T item, Node n) {
+        Node(Node p, T item, Node n) {
             value = item;
             prev = p;
             next = n;
@@ -128,7 +128,7 @@ public class LinkedListDeque<T>  implements Deque<T>, Iterable<T>  {
     private class LIterator<T> implements Iterator<T> {
         private int index;
 
-        public LIterator() {
+        LIterator() {
             index = 0;
         }
 
@@ -139,8 +139,13 @@ public class LinkedListDeque<T>  implements Deque<T>, Iterable<T>  {
 
         @Override
         public T next() {
-            index++;
-            return (T) get(index);
+            if (hasNext()) {
+                index++;
+                return (T) get(index);
+            } else {
+                return null;
+            }
+
         }
     }
 
@@ -152,22 +157,17 @@ public class LinkedListDeque<T>  implements Deque<T>, Iterable<T>  {
         if (o == null) {
             return false;
         }
-
         if (this == o) {
             return true;
         }
-
-        ArrayDeque<T> a = new ArrayDeque<>();
-        LinkedListDeque<T> l = new LinkedListDeque<>();
         Deque<T> ol;
 
-        if (o.getClass() == a.getClass()) {
-            ol = (ArrayDeque<T>) o;
-        } else if (o.getClass() == l.getClass()) {
-            ol = (LinkedListDeque<T>) o;
+        if (o instanceof Deque) {
+            ol = (Deque<T>) o;
         } else {
             return false;
         }
+
         if (size == ol.size()) {
             for (int i = 0; i < size; i++) {
                 if (!get(i).equals(ol.get(i))) {

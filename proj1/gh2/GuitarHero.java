@@ -32,7 +32,7 @@ public class GuitarHero {
 
             /* compute the superposition of samples */
             double sample = 0;
-            for (int j = 0; j < 37; j ++) {
+            for (int j = 0; j < 37; j++) {
                 sample += board[j].sample();
             }
 
@@ -40,7 +40,7 @@ public class GuitarHero {
             StdAudio.play(sample);
 
             /* advance the simulation of each guitar string by one step */
-            for (int j = 0; j < 37; j ++) {
+            for (int j = 0; j < 37; j++) {
                 board[j].tic();
             }
         }

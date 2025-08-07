@@ -3,6 +3,8 @@ package deque;
 import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
 
+import java.util.Iterator;
+
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
@@ -86,7 +88,7 @@ public class ArrayDequeTest {
         }
         d.printDeque();
         assertEquals(1, d.size());
-        assertEquals(8, d.N());
+        // assertEquals(8, d.N());
 
     }
 
@@ -192,6 +194,35 @@ public class ArrayDequeTest {
         for (int i : al) {
             System.out.println(i);
         }
+    }
+
+    @Test
+    public void iteratorNextValueTest() {
+        ArrayDeque<Integer> al = new ArrayDeque<>();
+        al.addLast(0);
+        al.addLast(1);
+        al.addLast(2);
+        Iterator<Integer> ai = al.iterator();
+        assertTrue(ai.hasNext());
+        assertEquals(ai.next(), al.get(0));
+    }
+
+    @Test
+    public void twoIteratorsTest() {
+        ArrayDeque<Integer> al = new ArrayDeque<>();
+        al.addLast(0);
+        al.addLast(1);
+        al.addLast(2);
+        Iterator<Integer> ai = al.iterator();
+        Iterator<Integer> bi = al.iterator();
+        for (int i = 0; i < 2; i++) {
+            assertTrue(ai.hasNext());
+            assertEquals(ai.next(), al.get(i));
+        }
+        for (int i = 0; i < 2; i++) {
+            assertTrue(bi.hasNext());
+            assertEquals(bi.next(), al.get(i));
+        }
 
     }
 
@@ -212,12 +243,44 @@ public class ArrayDequeTest {
     public void equalsButTypeDifTest() {
         ArrayDeque<Integer> al = new ArrayDeque<>();
         LinkedListDeque<Integer> bl = new LinkedListDeque<>();
-        for (int i = 0; i < 3; i++) {
-            al.addLast(i);
-            bl.addLast(i);
-        }
+        al.addLast(1);
+        al.addLast(2);
+        al.removeFirst();
+        bl.addFirst(2);
+        bl.addLast(2);
+        bl.removeLast();
         assertTrue(al.equals(bl));
         bl.addFirst(0);
         assertFalse(al.equals(bl));
+    }
+
+    @Test
+    public void equalsRandomTest() {
+        ArrayDeque<Integer> al = new ArrayDeque<>();
+        LinkedListDeque<Integer> bl = new LinkedListDeque<>();
+        int N = 400;
+        for (int i = 0; i < N; i += 1) {
+            int operationNumber = StdRandom.uniform(0, 4);
+            if (operationNumber == 0) {
+                // addLast
+                int randVal = StdRandom.uniform(0, 100);
+                al.addLast(randVal);
+                bl.addLast(randVal);
+                assertTrue(al.equals(bl));
+            } else if (operationNumber == 1) {
+                al.removeLast();
+                bl.removeLast();
+                assertTrue(al.equals(bl));
+            } else if (operationNumber == 2) {
+                int randVal = StdRandom.uniform(0, 100);
+                al.addFirst(randVal);
+                bl.addFirst(randVal);
+                assertTrue(al.equals(bl));
+            } else if (operationNumber == 3) {
+                al.removeFirst();
+                bl.removeFirst();
+                assertTrue(al.equals(bl));
+            }
+        }
     }
 }

@@ -17,7 +17,7 @@ public class MaxArrayDequeTest {
         il.addFirst(new Dog("Andy", 5));
         il.addFirst(new Dog("Bert", 4));
         il.addFirst(new Dog("Candy", 3));
-        System.out.print(il.max().name);
+        // System.out.print(il.max().name);
 
 
     }

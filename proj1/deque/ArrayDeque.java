@@ -8,9 +8,11 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private int head;
     private int tail;
 
+    /**
     public int N() {
         return items.length;
     }
+     */
 
     public ArrayDeque() {
         items = (T[]) new Object[8];
@@ -114,8 +116,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return items[move(index, head)];
     }
 
-    private class AIterator<T> implements Iterator<T> {
-        private int index;
+    public class AIterator<T> implements Iterator<T> {
+        int index;
 
         public AIterator() {
             index = 0;
@@ -128,8 +130,12 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
         @Override
         public T next() {
+            if (!hasNext()) {
+                return null;
+            }
+            T returnItem = (T) get(index);
             index++;
-            return (T) items[index];
+            return returnItem;
         }
     }
 
@@ -144,18 +150,14 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (this == o) {
             return true;
         }
-
-        ArrayDeque<T> a = new ArrayDeque<>();
-        LinkedListDeque<T> l = new LinkedListDeque<>();
         Deque<T> ol;
 
-        if (o.getClass() == a.getClass()) {
-            ol = (ArrayDeque<T>) o;
-        } else if (o.getClass() == l.getClass()) {
-            ol = (LinkedListDeque<T>) o;
+        if (o instanceof Deque) {
+            ol = (Deque<T>) o;
         } else {
             return false;
         }
+
         if (size == ol.size()) {
             for (int i = 0; i < size; i++) {
                 if (!get(i).equals(ol.get(i))) {

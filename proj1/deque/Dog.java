@@ -2,8 +2,8 @@ package deque;
 import java.util.Comparator;
 
 public class Dog implements Comparable<Dog> {
-    public String name;
-    public int size;
+    private String name;
+    private int size;
 
     public Dog(String n, int s) {
         name = n;
@@ -21,5 +21,4 @@ public class Dog implements Comparable<Dog> {
             return o1.name.compareTo(o2.name);
         }
     }
-
 }
