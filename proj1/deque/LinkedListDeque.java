@@ -139,13 +139,12 @@ public class LinkedListDeque<T>  implements Deque<T>, Iterable<T>  {
 
         @Override
         public T next() {
-            if (hasNext()) {
-                index++;
-                return (T) get(index);
-            } else {
+            if (!hasNext()) {
                 return null;
             }
-
+            T returnItem = (T) get(index);
+            index++;
+            return returnItem;
         }
     }
 
