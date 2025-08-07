@@ -8,6 +8,10 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private int head;
     private int tail;
 
+    public int N() {
+        return items.length;
+    }
+
     public ArrayDeque() {
         items = (T[]) new Object[8];
         head = 0; // points to the starting valued bit
@@ -15,6 +19,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         size = 0;
     }
 
+    /**
     public ArrayDeque(ArrayDeque other) {
         items = (T[]) new Object[8];
         head = 0;
@@ -23,6 +28,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
             addLast((T) other.get(i));
         }
     }
+     */
 
     private int move(int p, int step) {
         if (p + step >= items.length) {
@@ -98,7 +104,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     private void checkUsage() {
         int minimumLength = 8;
-        while ( size() / items.length < 1 / 4 && items.length > minimumLength) {
+        while ((double) size() / items.length < 1.0 / 4 && items.length > minimumLength) {
             resize(items.length / 2);
         }
     }
@@ -108,7 +114,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return items[move(index, head)];
     }
 
-    public class AIterator<T> implements Iterator<T> {
+    private class AIterator<T> implements Iterator<T> {
         private int index;
 
         public AIterator() {
@@ -122,30 +128,41 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
         @Override
         public T next() {
-            T returnItem = (T) items[index];
             index++;
-            return returnItem;
+            return (T) items[index];
         }
     }
 
-    public Iterator<T> iterator() { return new AIterator<T>(); }
+    public Iterator<T> iterator() {
+        return new AIterator<T>();
+    }
 
     public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
         if (this == o) {
             return true;
         }
 
-        // if (o instanceof ArrayDeque ol) {
-        if (this.getClass() == o.getClass()) {
-            ArrayDeque<T> ol = (ArrayDeque<T>) o;
-            if (size == ol.size()) {
-                for (int i = 0; i < size; i++) {
-                    if (!items[i].equals(ol.get(i))) {
-                        return false;
-                    }
+        ArrayDeque<T> a = new ArrayDeque<>();
+        LinkedListDeque<T> l = new LinkedListDeque<>();
+        Deque<T> ol;
+
+        if (o.getClass() == a.getClass()) {
+            ol = (ArrayDeque<T>) o;
+        } else if (o.getClass() == l.getClass()) {
+            ol = (LinkedListDeque<T>) o;
+        } else {
+            return false;
+        }
+        if (size == ol.size()) {
+            for (int i = 0; i < size; i++) {
+                if (!get(i).equals(ol.get(i))) {
+                    return false;
                 }
-                return true;
             }
+            return true;
         }
         return false;
     }

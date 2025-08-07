@@ -1,6 +1,7 @@
 package deque;
 
 import org.junit.Test;
+import java.util.Comparator;
 
 import java.lang.reflect.Array;
 

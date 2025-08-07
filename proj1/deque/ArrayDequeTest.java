@@ -2,9 +2,6 @@ package deque;
 
 import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
-// import org.testng.annotations.Test;
-
-import java.lang.reflect.Array;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -62,19 +59,35 @@ public class ArrayDequeTest {
         d.addFirst(1);
         d.addLast(4);
         d.addLast(5);
-        assertEquals(5, (int)d.get(4));
-        assertEquals(3, (int)d.get(2));
+        assertEquals(5, (int) d.get(4));
+        assertEquals(3, (int) d.get(2));
     }
 
     @Test
-    public void resizeTest() {
+    public void resizeUpTest() {
         ArrayDeque<Integer> d = new ArrayDeque<>();
         int N = 512;
-        for (int i = 0; i < N; i ++) {
+        for (int i = 0; i < N; i++) {
             d.addLast(i);
         }
         d.printDeque();
         assertEquals(512, d.size());
+    }
+
+    @Test
+    public void resizeDownTest() {
+        ArrayDeque<Integer> d = new ArrayDeque<>();
+        int N = 16;
+        for (int i = 0; i < N; i++) {
+            d.addLast(i);
+        }
+        for (int i = 0; i < N - 1; i++) {
+            d.removeFirst();
+        }
+        d.printDeque();
+        assertEquals(1, d.size());
+        assertEquals(8, d.N());
+
     }
 
     @Test
@@ -111,25 +124,26 @@ public class ArrayDequeTest {
     public void autoShrinkTest() {
         ArrayDeque<Integer> d = new ArrayDeque<>();
         int N = 16;
-        for (int i = 0; i < N; i ++) {
+        for (int i = 0; i < N; i++) {
             d.addLast(i);
         }
         d.printDeque();
         System.out.println();
         assertEquals(16, d.size());
         int S = 15;
-        for (int i = 0; i < S; i ++) {
+        for (int i = 0; i < S; i++) {
             d.removeFirst();
         }
         d.printDeque();
         assertEquals(1, d.size());
     }
 
+    /**
     @Test
     public void deepCopyTest() {
         ArrayDeque<Integer> d1 = new ArrayDeque<>();
         int N = 16;
-        for (int i = 0; i < N; i ++) {
+        for (int i = 0; i < N; i++) {
             d1.addLast(i);
         }
         ArrayDeque<Integer> d2 = new ArrayDeque<>(d1);
@@ -138,6 +152,7 @@ public class ArrayDequeTest {
         assertEquals(15, d2.size());
         assertEquals(16, d1.size());
     }
+     */
 
     @Test
     public void isEmptyTest() {
@@ -151,7 +166,7 @@ public class ArrayDequeTest {
     public void sizeTest() {
         ArrayDeque<Integer> d = new ArrayDeque<>();
         assertTrue(d.isEmpty());
-        for (int i = 0; i < 4; i ++) {
+        for (int i = 0; i < 4; i++) {
             d.addLast(1);
             assertEquals(1 + i * 2, d.size());
             d.addFirst(1);
@@ -162,7 +177,7 @@ public class ArrayDequeTest {
         d.removeLast();
         assertFalse(d.isEmpty());
 
-        for (int i = 0; i < 3; i ++) {
+        for (int i = 0; i < 3; i++) {
             d.removeLast();
             d.removeFirst();
         }
@@ -184,6 +199,19 @@ public class ArrayDequeTest {
     public void equalsTest() {
         ArrayDeque<Integer> al = new ArrayDeque<>();
         ArrayDeque<Integer> bl = new ArrayDeque<>();
+        for (int i = 0; i < 3; i++) {
+            al.addLast(i);
+            bl.addLast(i);
+        }
+        assertTrue(al.equals(bl));
+        bl.addFirst(0);
+        assertFalse(al.equals(bl));
+    }
+
+    @Test
+    public void equalsButTypeDifTest() {
+        ArrayDeque<Integer> al = new ArrayDeque<>();
+        LinkedListDeque<Integer> bl = new LinkedListDeque<>();
         for (int i = 0; i < 3; i++) {
             al.addLast(i);
             bl.addLast(i);

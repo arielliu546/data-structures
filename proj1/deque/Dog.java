@@ -1,4 +1,5 @@
 package deque;
+import java.util.Comparator;
 
 public class Dog implements Comparable<Dog> {
     public String name;
