@@ -136,4 +136,28 @@ public class LinkedListDequeTest {
         int m = lld.getRecursive(1);
         assertEquals("should be of same value", 1, 1);
     }
+
+    @Test
+    public void LIteratorTest() {
+        LinkedListDeque<Integer> al = new LinkedListDeque<>();
+        al.addLast(1);
+        al.addLast(2);
+        for (int i : al) {
+            System.out.println(i);
+        }
+
+    }
+
+    @Test
+    public void equalsTest() {
+        LinkedListDeque<Integer> al = new LinkedListDeque<>();
+        LinkedListDeque<Integer> bl = new LinkedListDeque<>();
+        for (int i = 0; i < 3; i++) {
+            al.addLast(i);
+            bl.addLast(i);
+        }
+        assertTrue(al.equals(bl));
+        bl.addFirst(0);
+        assertFalse(al.equals(bl));
+    }
 }

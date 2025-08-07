@@ -1,6 +1,8 @@
 package deque;
 
+import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
+// import org.testng.annotations.Test;
 
 import java.lang.reflect.Array;
 
@@ -67,12 +69,42 @@ public class ArrayDequeTest {
     @Test
     public void resizeTest() {
         ArrayDeque<Integer> d = new ArrayDeque<>();
-        int N = 9;
+        int N = 512;
         for (int i = 0; i < N; i ++) {
             d.addLast(i);
         }
         d.printDeque();
-        assertEquals(9, d.size());
+        assertEquals(512, d.size());
+    }
+
+    @Test
+    public void randomTest() {
+        ArrayDeque<Integer> L = new ArrayDeque<>();
+        int N = 500;
+        int count = 0;
+        for (int i = 0; i < N; i += 1) {
+            int operationNumber = StdRandom.uniform(0, 3);
+            if (operationNumber == 0) {
+                // addLast
+                int randVal = StdRandom.uniform(0, 100);
+                L.addLast(randVal);
+                count++;
+                System.out.println("addLast(" + randVal + ")");
+            } else if (operationNumber == 1) {
+                // remove first;
+                if (!L.isEmpty()) {
+                    L.removeFirst();
+                    count--;
+                    System.out.println("removeFirst()");
+                }
+            } else if (operationNumber == 2) {
+                // size
+                int size = L.size();
+                System.out.println("size: " + size);
+                assertEquals(count, size);
+            }
+        }
+
     }
 
     @Test
@@ -135,7 +167,29 @@ public class ArrayDequeTest {
             d.removeFirst();
         }
         assertTrue(d.isEmpty());
+    }
 
+    @Test
+    public void AIteratorTest() {
+        ArrayDeque<Integer> al = new ArrayDeque<>();
+        al.addLast(1);
+        al.addLast(2);
+        for (int i : al) {
+            System.out.println(i);
+        }
 
+    }
+
+    @Test
+    public void equalsTest() {
+        ArrayDeque<Integer> al = new ArrayDeque<>();
+        ArrayDeque<Integer> bl = new ArrayDeque<>();
+        for (int i = 0; i < 3; i++) {
+            al.addLast(i);
+            bl.addLast(i);
+        }
+        assertTrue(al.equals(bl));
+        bl.addFirst(0);
+        assertFalse(al.equals(bl));
     }
 }
