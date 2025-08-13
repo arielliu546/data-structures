@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-public class BSTMap<K extends Comparable, V> implements Map61B<K, V> {
+public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
     private Node root;
     private int size;
@@ -16,7 +16,7 @@ public class BSTMap<K extends Comparable, V> implements Map61B<K, V> {
         Node right;
         // int size;
 
-        public Node (K k, V v) {
+        public Node(K k, V v) {
             key = k;
             value = v;
         }
@@ -37,7 +37,7 @@ public class BSTMap<K extends Comparable, V> implements Map61B<K, V> {
         }
         if (key.equals(root.key)) {
             return root;
-        } else if (key.compareTo(root.key) < 0) {
+        } else if (key.compareTo((K) root.key) < 0) {
             return find(root.left, key);
         } else {
             return find(root.right, key);
@@ -79,9 +79,9 @@ public class BSTMap<K extends Comparable, V> implements Map61B<K, V> {
             size += 1;
             return new Node(k, v);
         }
-        if (k.compareTo(root.key) < 0) {
+        if (k.compareTo((K) root.key) < 0) {
             root.left = put(root.left, k, v);
-        } else if(k.compareTo(root.key) > 0) {
+        } else if (k.compareTo((K) root.key) > 0) {
             root.right = put(root.right, k, v);
         }
         // size += 1;
@@ -111,7 +111,7 @@ public class BSTMap<K extends Comparable, V> implements Map61B<K, V> {
 
     private Node getMin() {
         Node temp = root;
-        while(temp.left != null) {
+        while (temp.left != null) {
             temp = temp.left;
         }
         return temp;
@@ -119,7 +119,7 @@ public class BSTMap<K extends Comparable, V> implements Map61B<K, V> {
 
     private Node getMax() {
         Node temp = root;
-        while(temp.right != null) {
+        while (temp.right != null) {
             temp = temp.right;
         }
         return temp;
@@ -192,7 +192,7 @@ public class BSTMap<K extends Comparable, V> implements Map61B<K, V> {
         print(root.right);
     }
 
-    private void printSingle(Node root){
+    private void printSingle(Node root) {
         System.out.println("key: " + root.key + "; value: " + root.value);
     }
 }
