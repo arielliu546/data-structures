@@ -1,5 +1,7 @@
 package gitlet;
 
+import edu.princeton.cs.algs4.ST;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.*;
@@ -113,12 +115,14 @@ public class Repository {
         File f = new File(filename);
         Blob b = new Blob(filename, getHash(f));
         Commit currentCommit = getCommitFromHash(branches.get(HEAD));
-        if (!stagingArea.contains(b) && !currentCommit.contains(b)) {
+        if (!stagingArea.contains(filename) && !currentCommit.contains(b)) {
             throw new GitletException("No reason to remove the file.");
         } else {
             if (stagingArea.contains(filename)) {
                 stagingArea.remove(filename);
                 restrictedDelete(f);
+                File fStaged = join(STAGING_AREA, filename);
+                fStaged.delete();
             }
             if (currentCommit.contains(b)) {
                 removingFiles.add(b.name);
@@ -135,6 +139,84 @@ public class Repository {
         String commitHash = commit(m, branches.get(HEAD));
         // clear staging area and removing area
         clearAreas();
+    }
+
+    public void log() {
+        Commit c = getCommitFromHash(branches.get(HEAD));
+        c.log(branches.get(HEAD));
+    }
+
+    public void globalLog() {
+        List<String> commitList = plainFilenamesIn(COMMITS_DIR);
+        for (String hash : commitList) {
+            File f = join(COMMITS_DIR, hash);
+            Commit c = readObject(f, Commit.class);
+            c.logSingle(hash);
+        }
+    }
+
+    public void find(String message) {
+        List<String> commitList = plainFilenamesIn(COMMITS_DIR);
+        Boolean printed = false;
+        for (String hash : commitList) {
+            File f = join(COMMITS_DIR, hash);
+            Commit c = readObject(f, Commit.class);
+            if (c.getMessage().contains(message)) {
+                System.out.println(hash);
+                printed = true;
+            }
+        }
+        if (!printed) {
+            System.out.println("Found no commit with that message.");
+        }
+    }
+
+    public void status() {
+        // TODO: still need to revise the order thing
+        // TODO: need constant time relative to the number of items
+        // this mean that i might need a priority queue
+        printBranches();
+        printStagedFiles();
+        printRemovedFiles();
+        printUnstaged();
+        printUntracked();
+    }
+
+    private void printBranches() {
+        System.out.println("=== Branches ===");
+        for (String name : branches.keySet()) {
+            if (name.equals(HEAD)) {
+                System.out.print("*");
+            }
+            System.out.println(name);
+        }
+        System.out.println();
+    }
+
+    private void printStagedFiles() {
+        System.out.println("=== Staged Files ===");
+        for (String filename : stagingArea) {
+            System.out.println(filename);
+        }
+        System.out.println();
+    }
+
+    private void printRemovedFiles() {
+        System.out.println("=== Removed Files ===");
+        for (String filename : removingFiles) {
+            System.out.println(filename);
+        }
+        System.out.println();
+    }
+
+    private void printUnstaged() {
+        System.out.println("=== Modifications Not Staged For Commit ===");
+        System.out.println();
+    }
+
+    private void printUntracked() {
+        System.out.println("=== Untracked Files ===");
+        System.out.println();
     }
 
     private void clearAreas() {

@@ -43,6 +43,26 @@ public class Main {
                 String message = args[1];
                 repo.commit(message);
                 break;
+
+            case "log":
+                repo.load();
+                repo.log();
+                break;
+
+            case "global-log":
+                repo.load();
+                repo.globalLog();
+                break;
+
+            case "find":
+                repo.load();
+                repo.find(args[1]);
+                break;
+
+            case "status":
+                repo.load();
+                repo.status();
+                break;
         }
     }
 

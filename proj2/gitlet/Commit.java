@@ -115,4 +115,34 @@ public class Commit implements Serializable {
         byte[] b = serialize(o);
         return sha1(b);
     }
+
+
+    /* example:
+    ===
+    commit a0da1ea5a15ab613bf9961fd86f010cf74c7ee48
+    Date: Thu Nov 9 20:00:05 2017 -0800
+    A commit message.
+
+     */
+    public void log(String hash) {
+        logSingle(hash);
+        if (parent != null) {
+            Commit parentCommit = getCommitFromHash(parent);
+            parentCommit.log(parent);
+        }
+    }
+
+    public void logSingle(String hash) {
+        System.out.println("===");
+        System.out.println("commit " + hash);
+        String dateS = String.format(
+                "%ta %1$tb %1$td %1$tT %1$tz", timeStamp);
+        System.out.println("Date: " + dateS);
+        System.out.println(message);
+        System.out.println();
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }
