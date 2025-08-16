@@ -41,7 +41,7 @@ public class Main {
             case "commit":
                 repo.load();
                 String message = args[1];
-                repo.commit(message);
+                repo.commitFromMain(message);
                 break;
 
             case "log":
@@ -63,6 +63,32 @@ public class Main {
                 repo.load();
                 repo.status();
                 break;
+
+            case "checkout":
+                repo.load();
+                if (args[1].equals("--")) {
+                    String filename = args[2];
+                    repo.checkoutFile(null, filename);
+                } else if (args[2].equals("--")){
+                    String commitHash = args[1];
+                    String filename = args[3];
+                    repo.checkoutFile(commitHash, filename);
+                } else {
+                    repo.checkoutBranch(args[1]);
+                }
+
+            case "branch":
+                repo.load();
+                repo.branch(args[1]);
+
+            case "rm-branch":
+                System.out.println("case rm-branch");
+                repo.load();
+                repo.rmBranch(args[1]);
+
+            case "reset":
+                repo.load();
+                repo.reset(args[1]);
         }
     }
 

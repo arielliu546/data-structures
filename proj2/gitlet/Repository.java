@@ -1,7 +1,5 @@
 package gitlet;
 
-import edu.princeton.cs.algs4.ST;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.*;
@@ -38,7 +36,10 @@ public class Repository {
     String HEAD;
     Branches branches;
     HashSet<String> stagingArea;
-    HashSet<String> removingFiles;
+    HashSet<String> removedFiles;
+    HashSet<String> unstagedDeleted;
+    HashSet<String> unstagedModified;
+    HashSet<String> untrackedFiles;
 
     public void init() throws IOException {
         // first of course we need the folders
@@ -50,7 +51,7 @@ public class Repository {
         BLOBS_DIR.mkdir();
         COMMITS_DIR.mkdir();
         stagingArea = new HashSet<>();
-        removingFiles = new HashSet<>();
+        removedFiles = new HashSet<>();
 
         // initializes branches and HEAD
         branches = new Branches();
@@ -59,8 +60,11 @@ public class Repository {
 
         HEAD = master.name;
 
-        // initial commit and alse write to file.
-        String initialCommit = commit("initial commit", null);
+        // initial commit and also write to file.
+        String initialCommitHash = createCommit("initial commit", null);
+
+        // moves HEAD to the initial commit
+        branches.move(HEAD, initialCommitHash);
 
         // saves branch and head info
         saveBranch();
@@ -69,16 +73,16 @@ public class Repository {
     }
 
     public void add(String filename) throws IOException {
-        /** Adds a copy of the file as it currently exists to the staging area
+        /** 1 Adds a copy of the file as it currently exists to the staging area
          * (see the description of the commit command). For this reason, adding
-         * a file is also called staging the file for addition. Staging an
-         * already-staged file overwrites the previous entry in the staging area
+         * a file is also called staging the file for addition.
+         * 2 Staging an already-staged file overwrites the previous entry in the staging area
          * with the new contents. The staging area should be somewhere in .gitlet.
-         * If the current working version of the file is identical to the version
+         * 3 If the current working version of the file is identical to the version
          * in the current commit, do not stage it to be added, and remove it from
          * the staging area if it is already there (as can happen when a file is
-         * changed, added, and then changed back to it’s original version). The
-         * file will no longer be staged for removal (see gitlet rm), if it was
+         * changed, added, and then changed back to it’s original version).
+         * 3.1 The file will no longer be staged for removal (see gitlet rm), if it was
          * at the time of the command. */
         // first, make sure the file exists in the working directory
         File f = new File(filename);
@@ -89,21 +93,32 @@ public class Repository {
         Blob b = new Blob(filename, getHash(f));
         // get current commit object
         Commit currentCommit = getCommitFromHash(branches.get(HEAD));
-        // if current commit already include the exact same blob to be staged,
+        // if current commit already includes the exact same blob to be staged,
         // aka the file isn't changed
         // do not stage it
         if (currentCommit.contains(b)) {
-            stagingArea.remove(b.name);
+            unstage(b.name);
         } else {
-            // put it in the staging area. automatically handles if the file is
-            // already there
-            stagingArea.add(filename);
-            // copy it to the staging folder with filename as its original name
-            Files.copy(f.toPath(), join(STAGING_AREA, filename).toPath());
+            stage(b.name);
         }
         // if the file is in the removing area, get it out of there
-        removingFiles.remove(filename);
+        removedFiles.remove(filename);
         saveAreas();
+    }
+
+    private void stage(String filename) throws IOException {
+        // put it in the staging area. automatically handles if the file is
+        // already there
+        stagingArea.add(filename);
+        File f = new File(filename);
+        // copy it to the staging folder with filename as its original name
+        Files.copy(f.toPath(), join(STAGING_AREA, filename).toPath());
+    }
+
+    private void unstage(String filename) {
+        stagingArea.remove(filename);
+        File f = join(STAGING_AREA, filename);
+        f.delete();
     }
 
     public void remove(String filename) {
@@ -125,7 +140,7 @@ public class Repository {
                 fStaged.delete();
             }
             if (currentCommit.contains(b)) {
-                removingFiles.add(b.name);
+                removedFiles.add(b.name);
                 File fileToDelete = new File(filename);
                 restrictedDelete(fileToDelete);
             }
@@ -134,9 +149,13 @@ public class Repository {
     }
 
     // called by the main function
-    public void commit(String m) throws IOException {
+    public void commitFromMain(String m) throws IOException {
+        if (m == null) {
+            throw new GitletException("Please enter a commit message.");
+        }
         // writes the commit and also saves blobs and branches
-        String commitHash = commit(m, branches.get(HEAD));
+        String commitHash = createCommit(m, branches.get(HEAD));
+        branches.move(HEAD, commitHash);
         // clear staging area and removing area
         clearAreas();
     }
@@ -194,16 +213,18 @@ public class Repository {
     }
 
     private void printStagedFiles() {
+        TreeSet<String> tree = new TreeSet<>(stagingArea);
         System.out.println("=== Staged Files ===");
-        for (String filename : stagingArea) {
+        for (String filename : tree) {
             System.out.println(filename);
         }
         System.out.println();
     }
 
     private void printRemovedFiles() {
+        TreeSet<String> tree = new TreeSet<>(removedFiles);
         System.out.println("=== Removed Files ===");
-        for (String filename : removingFiles) {
+        for (String filename : tree) {
             System.out.println(filename);
         }
         System.out.println();
@@ -219,27 +240,92 @@ public class Repository {
         System.out.println();
     }
 
-    private void clearAreas() {
-        stagingArea = new HashSet<>();
-        removingFiles = new HashSet<>();
-        saveAreas();
+    /* Takes the version of the file as it exists in the commit
+    with the given id, and puts it in the working directory, overwriting
+    the version of the file that’s already there if there is one. The new
+    version of the file is not staged. */
+    public void checkoutFile(String commitHash, String filename) throws IOException {
+        if (commitHash == null) {
+            commitHash = branches.get(HEAD);
+        }
+        Commit c = getCommitFromHash(commitHash);
+        File fileToRead = c.getFile(filename);
+        c.writeToWD(fileToRead, filename);
     }
 
-    // a very simple helper function that creates a folder with given name.
-    public static void createFolder(String folderName) {
-        File FOLDER = join(folderName);
-        FOLDER.mkdir();
+    /*Takes all files in the commit at the head of the given branch, and puts
+    them in the working directory, overwriting the versions of the files that are
+    already there if they exist. Also, at the end of this command, the given branch
+    will now be considered the current branch (HEAD). Any files that are tracked in
+    the current branch but are not present in the checked-out branch are deleted.
+    The staging area is cleared, unless the checked-out branch is the current branch */
+    public void checkoutBranch(String branchName) throws IOException {
+        if (branchName.equals(HEAD)) {
+            throw new GitletException("No need to checkout the current branch.");
+        }
+        String commitHash = branches.get(branchName);
+        if (commitHash == null) {
+            throw new GitletException("No such branch exists.");
+        }
+        Commit c = getCommitFromHash(commitHash);
+        c.writeAllToWD();
+        // TODO: did not clear files that isn't included in the checked out branch
+        HEAD = branchName;
+        clearAreas();
+    }
+
+    /** Creates a new branch with the given name, and points it at the current
+     * head commit. A branch is nothing more than a name for a reference (an SHA-1
+     * identifier) to a commit node. This command does NOT immediately
+     * switch to the newly created branch (just as in real Git). */
+    public void branch(String branchName) {
+        Branch b = new Branch(branchName, branches.get(HEAD));
+        branches.put(b);
+    }
+
+    /**  Deletes the branch with the given name. This only means to delete
+     * the pointer associated with the branch; it does not mean to delete all
+     * commits that were created under the branch, or anything like that. */
+    public void rmBranch(String branchName) {
+        if (branchName.equals(HEAD)) {
+            throw new GitletException("Cannot remove the current branch.");
+        }
+        if (branches.remove(branchName) == null) {
+            throw new GitletException("A branch with that name does not exist.");
+        }
+    }
+
+    /** Checks out all the files tracked by the given commit. Removes tracked
+     * files that are not present in that commit. Also moves the current
+     * branch’s head to that commit node. See the intro for an example of
+     * what happens to the head pointer after using reset.
+     * The [commit id] may be abbreviated as for checkout.
+     * The staging area is cleared. The command is essentially checkout
+     * of an arbitrary commit that also changes the current branch head. */
+    public void reset(String commitHash) throws IOException {
+        Commit c = getCommitFromHash(commitHash);
+        c.writeAllToWD();
+        branches.move(HEAD, commitHash);
+        clearAreas();
+    }
+
+    private void clearAreas() {
+        for (String file : stagingArea) {
+            unstage(file);
+        }
+        removedFiles.clear();
+        saveAreas();
     }
 
     // commits with message and parent info. writes to file
     /* creates the commit object, save it and get its hash */
-    private String commit(String _message, String _parent) throws IOException {
+    private String createCommit(String _message, String _parent) throws IOException {
         // create new commit object
-        Commit commit = new Commit(_message, _parent, stagingArea, removingFiles);
-        // returns the hash of this commit object
+        Commit commit = new Commit(_message, _parent, stagingArea, removedFiles);
+        // saves this commit and returns the hash of this commit object
         String commitHash = saveCommit(commit);
         // move HEAD's pointing branch
-        branches.put(HEAD, commitHash);
+        branches.move(HEAD, commitHash);
         saveBranch();
         saveHead();
         return commitHash;
@@ -260,7 +346,11 @@ public class Repository {
 
     private Commit getCommitFromHash(String _hash) {
         File f = join(COMMITS_DIR, _hash);
-        return readObject(f, Commit.class);
+        if (f.exists()) {
+            return readObject(f, Commit.class);
+        } else {
+            throw new GitletException("No commit with that id exists.");
+        }
     }
 
     public void load() {
@@ -273,14 +363,14 @@ public class Repository {
         File sf = join(GITLET_DIR, "staging");
         File rf = join(GITLET_DIR, "removing");
         writeObject(sf, stagingArea);
-        writeObject(rf, removingFiles);
+        writeObject(rf, removedFiles);
     }
 
     private void readAreas() {
         File sf = join(GITLET_DIR, "staging");
         File rf = join(GITLET_DIR, "removing");
         stagingArea = readObject(sf, HashSet.class);
-        removingFiles = readObject(rf, HashSet.class);
+        removedFiles = readObject(rf, HashSet.class);
     }
 
     private void saveBranch() {

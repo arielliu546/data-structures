@@ -32,6 +32,7 @@ RMAKE = "$(MAKE)"
 
 default:
 	$(RMAKE) -C $(PACKAGE) default
+	rm -f .gitlet
 
 check: default
 	$(RMAKE) -C testing PYTHON=$(PYTHON) TESTER_FLAGS="$(TESTER_FLAGS)" check
@@ -41,4 +42,5 @@ clean:
 	$(RM) *~
 	$(RMAKE) -C $(PACKAGE) clean
 	$(RMAKE) -C testing clean
+	rm -r .gitlet
 
