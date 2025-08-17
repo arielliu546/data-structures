@@ -76,19 +76,23 @@ public class Main {
                 } else {
                     repo.checkoutBranch(args[1]);
                 }
+                break;
 
             case "branch":
                 repo.load();
                 repo.branch(args[1]);
+                break;
 
             case "rm-branch":
                 System.out.println("case rm-branch");
                 repo.load();
                 repo.rmBranch(args[1]);
+                break;
 
             case "reset":
                 repo.load();
                 repo.reset(args[1]);
+                break;
         }
     }
 

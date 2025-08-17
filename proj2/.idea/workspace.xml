@@ -4,21 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9bba426b-edd6-4116-9798-92e7e269eb31" name="Changes" comment="">
+    <list default="true" id="844e0cae-e4cb-46c3-84d9-7032a93d0060" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../lab6/capers/Dog.java" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/capers/Dog.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlet/branches" beforeDir="false" afterPath="$PROJECT_DIR$/.gitlet/branches" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlet/commits/f45bb1d379338e94e2e8f509cb7a304be146c7d1" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlet/removing" beforeDir="false" afterPath="$PROJECT_DIR$/.gitlet/removing" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlet/staging" beforeDir="false" afterPath="$PROJECT_DIR$/.gitlet/staging" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Branches.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Branches.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Branches.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Branches.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitlet/HEAD" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitlet/blobs/06b3a6a67a8e4551c24950d1286a681b880f998c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitlet/branches" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitlet/commits/2a192217c45d95aaa3a04ecc91495175ba2207c0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitlet/commits/b93a3c1c7043191cfc38a55c2ce2021bb9ae7c6c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitlet/removing" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitlet/staging" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Commit.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Commit.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Commit.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Commit.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Repository.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Repository.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Repository.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Repository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/gitlet/Commit$FileNode.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/gitlet/Commit.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/gitlet/Commit.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/gitlet/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/gitlet/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/gitlet/Repository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/gitlet/Repository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/samples/test05-basic-add.in" beforeDir="false" afterPath="$PROJECT_DIR$/testing/samples/test05-remove.in" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,47 +43,28 @@
     </option>
   </component>
   <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 4
 }</component>
-  <component name="ProjectId" id="31Ga40A6MLav9n7cjPQI8D4RHpE" />
+  <component name="ProjectId" id="31MdySub8vtjAGmrvjpaogvTT9b" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.Main.executor": "Run",
+    "Application.Main.executor": "Debug",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Remote JVM Debug.gitlet remote.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/arielliu/Desktop/data-structures/proj2",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.35517243",
     "settings.editor.selected.configurable": "MavenSettings"
   }
 }]]></component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/testing/samples" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Application.Main">
-    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="gitlet.Main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="gitlet.Branch" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="gitlet debug" type="Remote">
+  <component name="RunManager">
+    <configuration name="gitlet remote" type="Remote">
       <module name="proj2" />
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -84,26 +72,32 @@
       <option name="HOST" value="localhost" />
       <option name="PORT" value="5005" />
       <option name="AUTO_RESTART" value="false" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="5005" />
+        <option name="LOCAL" value="false" />
+      </RunnerSettings>
       <method v="2" />
     </configuration>
-    <list>
-      <item itemvalue="Application.Main" />
-      <item itemvalue="Remote JVM Debug.gitlet debug" />
-    </list>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Application.Main" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="9bba426b-edd6-4116-9798-92e7e269eb31" name="Changes" comment="" />
-      <created>1755152668044</created>
+      <changelist id="844e0cae-e4cb-46c3-84d9-7032a93d0060" name="Changes" comment="" />
+      <created>1755338130060</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1755152668044</updated>
+      <updated>1755338130060</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gitlet/Main.java</url>
+          <line>22</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -85,12 +85,12 @@ public class Repository {
          * 3.1 The file will no longer be staged for removal (see gitlet rm), if it was
          * at the time of the command. */
         // first, make sure the file exists in the working directory
-        File f = new File(filename);
+        File f = join(CWD, filename);
         if (!f.exists()) {
             throw new GitletException("File does not exist.");
         }
         // create new blob out of it (blob stores the file name with the hash code)
-        Blob b = new Blob(filename, getHash(f));
+        Blob b = new Blob(filename, getFileHash(f));
         // get current commit object
         Commit currentCommit = getCommitFromHash(branches.get(HEAD));
         // if current commit already includes the exact same blob to be staged,
@@ -128,21 +128,19 @@ public class Repository {
          * the user has not already done so (do not remove it unless
          * it is tracked in the current commit). */
         File f = new File(filename);
-        Blob b = new Blob(filename, getHash(f));
+        Blob b = new Blob(filename, getFileHash(f));
         Commit currentCommit = getCommitFromHash(branches.get(HEAD));
         if (!stagingArea.contains(filename) && !currentCommit.contains(b)) {
             throw new GitletException("No reason to remove the file.");
         } else {
             if (stagingArea.contains(filename)) {
                 stagingArea.remove(filename);
-                restrictedDelete(f);
                 File fStaged = join(STAGING_AREA, filename);
                 fStaged.delete();
             }
             if (currentCommit.contains(b)) {
                 removedFiles.add(b.name);
-                File fileToDelete = new File(filename);
-                restrictedDelete(fileToDelete);
+                restrictedDelete(f);
             }
         }
         saveAreas();
@@ -268,8 +266,8 @@ public class Repository {
             throw new GitletException("No such branch exists.");
         }
         Commit c = getCommitFromHash(commitHash);
+        c.checkForUntracked(branches.get(HEAD));
         c.writeAllToWD();
-        // TODO: did not clear files that isn't included in the checked out branch
         HEAD = branchName;
         clearAreas();
     }
@@ -304,6 +302,7 @@ public class Repository {
      * of an arbitrary commit that also changes the current branch head. */
     public void reset(String commitHash) throws IOException {
         Commit c = getCommitFromHash(commitHash);
+        c.checkForUntracked(commitHash);
         c.writeAllToWD();
         branches.move(HEAD, commitHash);
         clearAreas();
@@ -337,6 +336,12 @@ public class Repository {
         File f = join(COMMITS_DIR, hash);
         writeObject(f, c);
         return hash;
+    }
+
+    // turns out there's this useful function in utils!
+    public String getFileHash(File f) {
+        byte[] b = readContents(f);
+        return sha1(b);
     }
 
     public String getHash(Serializable o) {

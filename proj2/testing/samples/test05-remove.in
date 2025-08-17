@@ -1,0 +1,16 @@
+# A simple test of adding, removing, committing, and removing.
+> init
+<<<
++ wug.txt wug.txt
+> add wug.txt
+<<<
+> rm wug.txt
+<<<
+E wug.txt
+> add wug.txt
+<<<
+> commit "added wug.txt"
+<<<
+> rm wug.txt
+<<<
+* wug.txt

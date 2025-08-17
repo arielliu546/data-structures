@@ -2,8 +2,6 @@ package gitlet;
 
 // TODO: any imports you need here
 
-import edu.princeton.cs.algs4.ST;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -69,7 +67,7 @@ public class Commit implements Serializable {
     private void processStagedFiles(Collection<String> stagedFiles) throws IOException {
         for (String filename : stagedFiles) {
             File fileToAdd = join(STAGING_AREA, filename); // gets the file from the staging area
-            String fileHash = getHash(fileToAdd); // get its unique hash and make the blob
+            String fileHash = getFileHash(fileToAdd); // get its unique hash and make the blob
             Blob blobToAdd = new Blob(filename, fileHash);
             // adds the file with appointed name in the staging area to the tracked files
             // of this commit
@@ -104,7 +102,11 @@ public class Commit implements Serializable {
     // if files related to the current commit already includes the file blob (name, hash), return True
     // O(1)
     public boolean contains(Blob fb) {
-        return trackedFiles.get(fb.name) != null;
+        String storedHash = trackedFiles.get(fb.name);
+        if (storedHash != null) {
+            return storedHash.equals(fb.hash);
+        }
+        return false;
     }
 
     private Commit getCommitFromHash(String _hash) {
@@ -114,8 +116,8 @@ public class Commit implements Serializable {
         return readObject(f, Commit.class);
     }
 
-    public String getHash(Serializable o) {
-        byte[] b = serialize(o);
+    public String getFileHash(File f) {
+        byte[] b = readContents(f);
         return sha1(b);
     }
 
@@ -128,7 +130,31 @@ public class Commit implements Serializable {
         return join(BLOBS_DIR, fileHash);
     }
 
+    /* checks if a working file is untracked in the current branch and
+    would be overwritten by the reset */
+    public void checkForUntracked(String oldCommitHash) {
+        Commit old = getCommitFromHash(oldCommitHash);
+        // for all the files in the working directory
+        for (String fileInWD : Objects.requireNonNull(plainFilenamesIn(CWD))) {
+            File f = join(CWD, fileInWD);
+            Blob b = new Blob(fileInWD, getFileHash(f));
+            // if the file is untracked
+            if (!old.contains(b)) {
+                /* if the file will be overwritten, aka the blob in the object commit is different
+                * from what it is right now*/
+                if (!contains(b)){
+                    throw new GitletException("There is an untracked file in the way; " +
+                            "delete it, or add and commit it first.");
+                }
+            }
+        }
+    }
+
     public void writeAllToWD() throws IOException {
+        for (String filename : plainFilenamesIn(CWD)) {
+            File f = join(CWD, filename);
+            restrictedDelete(f);
+        }
         for (String filename : trackedFiles.keySet()) {
             File fileToRead = getFile(filename);
             writeToWD(fileToRead, filename);
@@ -163,7 +189,7 @@ public class Commit implements Serializable {
         System.out.println("===");
         System.out.println("commit " + hash);
         String dateS = String.format(
-                "%ta %1$tb %1$td %1$tT %1$tz", timeStamp);
+                "%ta %1$tb %1$td %1$tT %1$tY %1$tz", timeStamp);
         System.out.println("Date: " + dateS);
         System.out.println(message);
         System.out.println();
