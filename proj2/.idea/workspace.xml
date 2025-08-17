@@ -6,26 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="844e0cae-e4cb-46c3-84d9-7032a93d0060" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../lab6/capers/Dog.java" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/capers/Dog.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlet/HEAD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlet/blobs/06b3a6a67a8e4551c24950d1286a681b880f998c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlet/branches" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlet/commits/2a192217c45d95aaa3a04ecc91495175ba2207c0" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlet/commits/b93a3c1c7043191cfc38a55c2ce2021bb9ae7c6c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlet/removing" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlet/staging" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Commit.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Commit.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Blob.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Blob.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Branches.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Commit.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Commit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Repository.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Repository.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Repository.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Repository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/gitlet/Commit$FileNode.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/gitlet/Commit.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/gitlet/Commit.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/gitlet/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/gitlet/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/gitlet/Repository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/gitlet/Repository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/samples/test05-basic-add.in" beforeDir="false" afterPath="$PROJECT_DIR$/testing/samples/test05-remove.in" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/StageManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/StageManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date; // TODO: You'll likely use this in this class
 import java.util.*;
 
@@ -30,8 +28,7 @@ public class Commit implements Serializable {
 
     /** The message of this Commit. */
     private String message;
-    /** A mapping of file names to its hash.
-     * stores name and content hash. */
+    /** A mapping of file names to its hash, stores name and content hash. */
     private HashMap<String, String> trackedFiles;
     /** Records the committing date and time. */
     private Date timeStamp;
@@ -43,9 +40,15 @@ public class Commit implements Serializable {
     final File BLOBS_DIR = join(CWD, ".gitlet", "blobs");
     final File STAGING_AREA = join(CWD, ".gitlet", "staging_area");
 
-    public Commit(String _message, String _parent, Collection<String> stagedFiles, Collection<String> removedFiles) throws IOException {
+    // constructor
+    public Commit(String _message, String _parent, StageManager sm) throws IOException {
+
+        Set<String> stagedFiles = sm.getStaged();
+        Set<String> removedFiles = sm.getRemoved();
+
         message = _message;
         parent = _parent;
+        // handles the initialize case
         if (parent == null) {
             // this means that this is the initial commit
             // make time 0, and there's no tracked files
@@ -56,28 +59,24 @@ public class Commit implements Serializable {
                 throw new GitletException("No changes added to the commit.");
             }
             timeStamp = new Date();
-            trackedFiles = getCommitFromHash(parent).trackedFiles;
-            processStagedFiles(stagedFiles);
-            processRemovedFiles(removedFiles);
+            trackedFiles = StorageManager.getCommitFromHash(parent).trackedFiles;
+            processStage(sm);
         }
     }
 
     /* add staged files (filename) to tracked files (Blob)
-    * also writes to the blob folder with file's hash as name */
-    private void processStagedFiles(Collection<String> stagedFiles) throws IOException {
-        for (String filename : stagedFiles) {
-            File fileToAdd = join(STAGING_AREA, filename); // gets the file from the staging area
-            String fileHash = getFileHash(fileToAdd); // get its unique hash and make the blob
-            Blob blobToAdd = new Blob(filename, fileHash);
+     * also writes to the blob folder with file's hash as name
+     * removed files are untracked */
+    private void processStage(StageManager sm) throws IOException {
+        for (String filename : sm.getStaged()) {
+            File file = join(STAGING_AREA, filename); // gets the file from the staging area
+            Blob blob = Blob.makeBlob(file);
             // adds the file with appointed name in the staging area to the tracked files
             // of this commit
             // consider versions! what if the older version of this file is already tracked?
-            addToTrack(blobToAdd);
+            addToTrack(blob);
         }
-    }
-
-    private void processRemovedFiles(Collection<String> rf) {
-        for (String filename : rf) {
+        for (String filename : sm.getRemoved()) {
             trackedFiles.remove(filename);
         }
     }
@@ -87,16 +86,7 @@ public class Commit implements Serializable {
         // in this way, the old value (hash) is automatically replaced
         trackedFiles.put(b.name, b.hash);
         // save the file to the BLOBS_DIR, named as its hash
-        writeBlob(b);
-    }
-    // copy the file blob in the staging area to the blobs folder, named as hash
-    private void writeBlob(Blob f) throws IOException {
-        // the new file is in the blobs folder, named as its hash
-        File newFile = join(BLOBS_DIR, f.hash);
-        // it is taken form the staged file with the corresponding name
-        File stagedFile = join(STAGING_AREA, f.name);
-        // I think even when there was an exact same blob, this still works
-        Files.copy(stagedFile.toPath(), newFile.toPath());
+        StorageManager.saveBlob(b);
     }
 
     // if files related to the current commit already includes the file blob (name, hash), return True
@@ -109,20 +99,8 @@ public class Commit implements Serializable {
         return false;
     }
 
-    private Commit getCommitFromHash(String _hash) {
-        final File CWD = new File(System.getProperty("user.dir"));
-        final File COMMITS_DIR = join(CWD, ".gitlet", "commits");
-        File f = join(COMMITS_DIR, _hash);
-        return readObject(f, Commit.class);
-    }
-
-    public String getFileHash(File f) {
-        byte[] b = readContents(f);
-        return sha1(b);
-    }
-
     // returns the tracked file with the given name
-    public File getFile(String filename) {
+    public File getBlob(String filename) {
         String fileHash = trackedFiles.get(filename);
         if (fileHash == null) {
             throw new GitletException("File does not exist in that commit.");
@@ -133,11 +111,11 @@ public class Commit implements Serializable {
     /* checks if a working file is untracked in the current branch and
     would be overwritten by the reset */
     public void checkForUntracked(String oldCommitHash) {
-        Commit old = getCommitFromHash(oldCommitHash);
+        Commit old = StorageManager.getCommitFromHash(oldCommitHash);
         // for all the files in the working directory
         for (String fileInWD : Objects.requireNonNull(plainFilenamesIn(CWD))) {
             File f = join(CWD, fileInWD);
-            Blob b = new Blob(fileInWD, getFileHash(f));
+            Blob b = new Blob(fileInWD, StorageManager.getFileHash(f));
             // if the file is untracked
             if (!old.contains(b)) {
                 /* if the file will be overwritten, aka the blob in the object commit is different
@@ -156,7 +134,7 @@ public class Commit implements Serializable {
             restrictedDelete(f);
         }
         for (String filename : trackedFiles.keySet()) {
-            File fileToRead = getFile(filename);
+            File fileToRead = getBlob(filename);
             writeToWD(fileToRead, filename);
         }
     }
@@ -180,7 +158,7 @@ public class Commit implements Serializable {
     public void log(String hash) {
         logSingle(hash);
         if (parent != null) {
-            Commit parentCommit = getCommitFromHash(parent);
+            Commit parentCommit = StorageManager.getCommitFromHash(parent);
             parentCommit.log(parent);
         }
     }
