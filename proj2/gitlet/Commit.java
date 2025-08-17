@@ -108,18 +108,28 @@ public class Commit implements Serializable {
         return join(BLOBS_DIR, fileHash);
     }
 
+    /** returns a TreeMap of all the tracked files (name, hash) in the commit */
+    public Map<String, String> getAllTracked() {
+        Map<String, String> res = new HashMap<>();
+        for (String name : trackedFiles.keySet()) {
+            res.put(name, trackedFiles.get(name));
+        }
+        return res;
+    }
+
     /* checks if a working file is untracked in the current branch and
     would be overwritten by the reset */
     public void checkForUntracked(String oldCommitHash) {
-        Commit old = StorageManager.getCommitFromHash(oldCommitHash);
+        Commit oldC = StorageManager.getCommitFromHash(oldCommitHash);
         // for all the files in the working directory
         for (String fileInWD : Objects.requireNonNull(plainFilenamesIn(CWD))) {
+            // get the blob of the file in WD
             File f = join(CWD, fileInWD);
             Blob b = new Blob(fileInWD, StorageManager.getFileHash(f));
-            // if the file is untracked
-            if (!old.contains(b)) {
-                /* if the file will be overwritten, aka the blob in the object commit is different
-                * from what it is right now*/
+            // if the file is untracked, aka if the blob is not tracked
+            if (!oldC.contains(b)) {
+                /* if the file will be overwritten (modified or deleted),
+                aka the blob is not in the checked out commit */
                 if (!contains(b)){
                     throw new GitletException("There is an untracked file in the way; " +
                             "delete it, or add and commit it first.");
@@ -135,20 +145,11 @@ public class Commit implements Serializable {
         }
         for (String filename : trackedFiles.keySet()) {
             File fileToRead = getBlob(filename);
-            writeToWD(fileToRead, filename);
+            StorageManager.writeToWD(fileToRead, filename);
         }
     }
 
-    public void writeToWD(File fileToRead, String filename) throws IOException {
-        File fileToWrite = new File(filename);
-        if (fileToWrite.exists()) {
-            fileToWrite.delete();
-        }
-        Files.copy(fileToRead.toPath(), fileToWrite.toPath());
-    }
-
-
-    /* example:
+    /** example:
     ===
     commit a0da1ea5a15ab613bf9961fd86f010cf74c7ee48
     Date: Thu Nov 9 20:00:05 2017 -0800
@@ -175,5 +176,12 @@ public class Commit implements Serializable {
 
     public String getMessage() {
         return message;
+    }
+
+    public Commit getParent() {
+        if (parent != null) {
+            return StorageManager.getCommitFromHash(parent);
+        }
+        return null;
     }
 }

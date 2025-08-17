@@ -7,12 +7,10 @@
     <list default="true" id="844e0cae-e4cb-46c3-84d9-7032a93d0060" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../lab6/capers/Dog.java" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/capers/Dog.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Blob.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Blob.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Branches.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/BranchManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/BranchManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Commit.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Commit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Repository.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Repository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gitlet/StageManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/StageManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/StorageManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/StorageManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

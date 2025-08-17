@@ -69,4 +69,27 @@ public class BranchManager implements Serializable {
         }
     }
 
+    /** find the split point of the current branch and the given branch.
+     * */
+    public Commit getSplitPoint(String branchName) {
+        HashSet<Commit> headParents = new HashSet<>();
+        Commit currentCommit = StorageManager.getCommitFromHash(getCurrentHash());
+        Commit temp = currentCommit;
+        Commit s = null;
+        while (temp.getParent() != null) {
+            Commit p = temp.getParent();
+            headParents.add(p);
+        }
+        Commit givenCommit = StorageManager.getCommitFromHash(getCommitHash(branchName));
+        temp = givenCommit;
+        while (temp.getParent() != null) {
+            Commit p = temp.getParent();
+            if (headParents.contains(p)) {
+                s = p;
+            }
+        }
+        assert s != null;
+        return s;
+    }
+
 }

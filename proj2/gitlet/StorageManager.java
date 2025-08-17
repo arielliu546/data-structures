@@ -64,6 +64,15 @@ public class StorageManager {
         Files.copy(stagedFile.toPath(), newFile.toPath());
     }
 
+    public static void writeToWD(File f, String filename) throws IOException {
+         File newFile = join(CWD, filename);
+         if (newFile.exists()) {
+             restrictedDelete(newFile);
+         }
+        Files.copy(f.toPath(),
+                newFile.toPath());
+    }
+
     public static void saveBranches(File GITLET_DIR, BranchManager bm) {
         File f = join(GITLET_DIR, "branches");
         writeObject(f, bm);

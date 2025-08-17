@@ -182,7 +182,7 @@ public class Repository {
         }
         Commit c = StorageManager.getCommitFromHash(commitHash);
         File fileToRead = c.getBlob(filename);
-        c.writeToWD(fileToRead, filename);
+        StorageManager.writeToWD(fileToRead, filename);
     }
 
     /*Takes all files in the commit at the head of the given branch, and puts
@@ -242,8 +242,40 @@ public class Repository {
         StorageManager.saveStages(GITLET_DIR, stageManager);
     }
 
-    public void merge(String branchName) {
+    public void merge(String branchName) throws IOException {
+        load();
+        Commit splitPoint = branchManager.getSplitPoint(branchName);
+        Commit currentCommit = StorageManager.getCommitFromHash(branchManager.getCurrentHash());
+        Commit givenCommit = StorageManager.getCommitFromHash(branchManager.getCommitHash(branchName));
+        if (splitPoint.equals(currentCommit)) {
+            System.out.println("Current branch fast-forwarded.");
+            checkoutBranch(branchName);
+            System.exit(0);
+        } else if (splitPoint.equals(givenCommit)) {
+            System.out.println("Given branch is an ancestor of the current branch.");
+            System.exit(0);
+        }
+        processMerge(currentCommit, givenCommit, splitPoint);
+    }
 
+    private void processMerge(Commit current, Commit given, Commit split) {
+        /** split           current         given       status
+         *  present         unchanged       modified    checkoutFile(given, filename); stage(filename);
+         *  present         =               absent      remove and untrack the file
+         *  present         modified        unchanged   -
+         *  present         absent          unchanged   -
+         *  present         modified        =           -
+         *  present         removed         =           -; if a file of the same name is present in WD, leave it be
+         *  absent          present         absent      -
+         *  absent          =               present     checkoutFile(given, filename); stage(filename);
+         *  present         modified        differs     in conflict, re-edit
+         *  present         one is deleted, on is modified
+         *  absent          same name, differs
+         * */
+
+        for (String file : split.getAllTracked().keySet()) {
+            String fileHash = split.getAllTracked().get(file);
+        }
     }
 
     // commits with message and parent info. writes to file
