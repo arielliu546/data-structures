@@ -103,7 +103,7 @@ public class Commit implements Serializable {
     public File getBlob(String filename) {
         String fileHash = trackedFiles.get(filename);
         if (fileHash == null) {
-            throw new GitletException("File does not exist in that commit.");
+            return null;
         }
         return join(BLOBS_DIR, fileHash);
     }

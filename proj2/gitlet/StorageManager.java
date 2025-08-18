@@ -8,7 +8,7 @@ import java.nio.file.StandardCopyOption;
 
 import static gitlet.Utils.*;
 
-public class StorageManager {
+class StorageManager {
 
     /** The current working directory. */
     public static final File CWD = new File(System.getProperty("user.dir"));
@@ -91,6 +91,14 @@ public class StorageManager {
     public static StageManager readStage(File GITLET_DIR) {
         File f = join(GITLET_DIR, "stages");
         return readObject(f, StageManager.class);
+    }
+
+    public static String getContentString(File f) {
+        if (f == null) {
+            return "";
+        } else {
+            return readContentsAsString(f);
+        }
     }
 
 }

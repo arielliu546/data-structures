@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
+import static gitlet.StorageManager.*;
 import static gitlet.Utils.*;
 
 // TODO: any imports you need here
@@ -45,7 +46,7 @@ public class Repository {
             throw new GitletException("A Gitlet version-control system already exists in the current directory.");
         }
 
-        StorageManager.initializeFolders();
+        initializeFolders();
 
         // initializes branches and HEAD
         branchManager = new BranchManager(GITLET_DIR);
@@ -58,8 +59,8 @@ public class Repository {
         branchManager.move(initialCommitHash);
 
         // saves branch and head info
-        StorageManager.saveBranches(GITLET_DIR, branchManager);
-        StorageManager.saveStages(GITLET_DIR, stageManager);
+        saveBranches(GITLET_DIR, branchManager);
+        saveStages(GITLET_DIR, stageManager);
     }
     /** 1 Adds a copy of the file as it currently exists to the staging area
      * (see the description of the commit command). For this reason, adding
@@ -182,6 +183,9 @@ public class Repository {
         }
         Commit c = StorageManager.getCommitFromHash(commitHash);
         File fileToRead = c.getBlob(filename);
+        if (fileToRead == null) {
+            throw new GitletException("File does not exist in that commit.");
+        }
         StorageManager.writeToWD(fileToRead, filename);
     }
 
@@ -258,24 +262,91 @@ public class Repository {
         processMerge(currentCommit, givenCommit, splitPoint);
     }
 
-    private void processMerge(Commit current, Commit given, Commit split) {
-        /** split           current         given       status
-         *  present         unchanged       modified    checkoutFile(given, filename); stage(filename);
-         *  present         =               absent      remove and untrack the file
-         *  present         modified        unchanged   -
-         *  present         absent          unchanged   -
-         *  present         modified        =           -
-         *  present         removed         =           -; if a file of the same name is present in WD, leave it be
-         *  absent          present         absent      -
-         *  absent          =               present     checkoutFile(given, filename); stage(filename);
-         *  present         modified        differs     in conflict, re-edit
-         *  present         one is deleted, on is modified
-         *  absent          same name, differs
-         * */
+    /** split           current         given       status
+     *  present         unchanged       modified    checkoutFile(given, filename); stage(filename);
+     *  present         unchanged       absent      remove and untrack the file
+     *  present         modified        unchanged   -
+     *  present         absent          unchanged   -
+     *  present         modified        =modified   -
+     *  present         removed         =removed     -; if a file of the same name is present in WD, leave it be
+     *  absent          present         absent      -
+     *  absent          =absent          present     checkoutFile(given, filename); stage(filename);
+     *  present         modified        differs     in conflict, re-edit
+     *  present         one is deleted, on is modified
+     *  absent          same name, differs
+     * */
+    private void processMerge(Commit current, Commit given, Commit split) throws IOException {
+        Map<String, String> splitTracked = split.getAllTracked();
+        Map<String, String> currentTracked = current.getAllTracked();
+        Map<String, String> givenTracked = given.getAllTracked();
 
-        for (String file : split.getAllTracked().keySet()) {
-            String fileHash = split.getAllTracked().get(file);
+        // for every file in the current commit
+        for (String file : currentTracked.keySet()) {
+            String sHash = splitTracked.get(file);
+            String cHash = currentTracked.get(file);
+            String gHash = givenTracked.get(file);
+            if (sHash != null) { // when the file is also present in the current commit
+                if (sHash.equals(cHash)) { // when the current file is unchanged
+                    if (gHash == null) {
+                        /* if file in given is already removed, remove and untrack the file */
+                        restrictedDelete(file);
+                        /* for untracking, since the file is already untracked in the current commit,
+                         * nothing needs to be done */
+                        break;
+                    } else if (!sHash.equals(gHash)) {
+                        /* if file in given is modified, checkout and stage the file */
+                        File fileToAdd = given.getBlob(file);
+                        StorageManager.writeToWD(fileToAdd, file);
+                        stageManager.stage(file);
+                        break;
+                    }
+                } else if (gHash == null || !gHash.equals(cHash)) { // case -3
+                    File newf = cat(file, current, given);
+                    StorageManager.writeToWD(newf, file);
+                    stageManager.stage(file);
+                }
+            } else { // when the file was absent in split
+                if (cHash != null) {
+                    if (!sHash.equals(cHash)) {
+                        File newf = cat(file, current, given);
+                        StorageManager.writeToWD(newf, file);
+                        stageManager.stage(file);
+                    }
+                }
+            }
         }
+
+        // for files present only in given
+        for (String file : givenTracked.keySet()) {
+            String cHash = currentTracked.get(file);
+            String sHash = splitTracked.get(file);
+            String gHash = givenTracked.get(file);
+            if (cHash == null && sHash == null) {
+                File fileToAdd = given.getBlob(file);
+                StorageManager.writeToWD(fileToAdd, file);
+                stageManager.stage(file);
+            }
+            if (cHash == null && sHash != null && !sHash.equals(gHash)) {
+                File newf = cat(file, current, given);
+                StorageManager.writeToWD(newf, file);
+                stageManager.stage(file);
+            }
+        }
+    }
+
+    private File cat(String filename, Commit current, Commit given) {
+        File cf = current.getBlob(filename);
+        File gf = given.getBlob(filename);
+        String cs = getContentString(cf);
+        String gs = getContentString(gf);
+        File newF = join(CWD, filename);
+        writeContents(newF,
+                "<<<<<<< HEAD\n",
+                cs,
+                "=======\n",
+                gs,
+                ">>>>>>>");
+        return newF;
     }
 
     // commits with message and parent info. writes to file
