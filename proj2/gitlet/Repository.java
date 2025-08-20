@@ -1,7 +1,6 @@
 package gitlet;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -40,7 +39,7 @@ public class Repository {
 
 
 
-    public void init() throws IOException {
+    public void init() {
         // first of course we need the folders
         if (GITLET_DIR.exists()) {
             throw new GitletException("A Gitlet version-control system already exists in the current directory.");
@@ -73,7 +72,7 @@ public class Repository {
      * changed, added, and then changed back to it’s original version).
      * 3.1 The file will no longer be staged for removal (see gitlet rm), if it was
      * at the time of the command. */
-    public void add(String filename) throws IOException {
+    public void add(String filename) {
         load();
         // first, make sure the file exists in the working directory
         File f = join(CWD, filename);
@@ -120,7 +119,7 @@ public class Repository {
     }
 
     // called by the main function
-    public void commitFromMain(String m) throws IOException {
+    public void commitFromMain(String m) {
         load();
         if (m == null) {
             throw new GitletException("Please enter a commit message.");
@@ -176,7 +175,7 @@ public class Repository {
     with the given id, and puts it in the working directory, overwriting
     the version of the file that’s already there if there is one. The new
     version of the file is not staged. */
-    public void checkoutFile(String commitHash, String filename) throws IOException {
+    public void checkoutFile(String commitHash, String filename) {
         load();
         if (commitHash == null) {
             commitHash = branchManager.getCurrentHash();
@@ -195,7 +194,7 @@ public class Repository {
     will now be considered the current branch (HEAD). Any files that are tracked in
     the current branch but are not present in the checked-out branch are deleted.
     The staging area is cleared, unless the checked-out branch is the current branch */
-    public void checkoutBranch(String branchName) throws IOException {
+    public void checkoutBranch(String branchName) {
         load();
         if (branchName.equals(branchManager.getHEAD())) {
             throw new GitletException("No need to checkout the current branch.");
@@ -238,7 +237,7 @@ public class Repository {
      * The [commit id] may be abbreviated as for checkout.
      * The staging area is cleared. The command is essentially checkout
      * of an arbitrary commit that also changes the current branch head. */
-    public void reset(String commitHash) throws IOException {
+    public void reset(String commitHash) {
         load();
         Commit c = StorageManager.getCommitFromHash(commitHash);
         c.checkForUntracked(commitHash);
@@ -249,7 +248,7 @@ public class Repository {
         save(GITLET_DIR, stageManager, branchManager);
     }
 
-    public void merge(String branchName) throws IOException {
+    public void merge(String branchName) {
         load();
         if (!stageManager.isNull()) {
             System.out.println("You have uncommitted changes.");
@@ -298,7 +297,7 @@ public class Repository {
      *  present         one is deleted, on is modified
      *  absent          same name, differs
      * */
-    private boolean processMerge(Commit current, Commit given, Commit split) throws IOException {
+    private boolean processMerge(Commit current, Commit given, Commit split) {
         Map<String, String> splitTracked = split.getAllTracked();
         Map<String, String> currentTracked = current.getAllTracked();
         Map<String, String> givenTracked = given.getAllTracked();
@@ -355,7 +354,7 @@ public class Repository {
         return res;
     }
 
-    private void handleConflict(String file, Commit current, Commit given) throws IOException {
+    private void handleConflict(String file, Commit current, Commit given) {
         File newf = cat(file, current, given);
         StorageManager.writeToWD(newf, file);
         stageManager.stage(file);
@@ -378,7 +377,7 @@ public class Repository {
 
     // commits with message and parent info. writes to file
     /* creates the commit object, save it and get its hash */
-    private String createCommit(String _message, String _parent, String _secondParent) throws IOException {
+    private String createCommit(String _message, String _parent, String _secondParent) {
         // create new commit object
         Commit commit = new Commit(_message, _parent, _secondParent, stageManager);
         // saves this commit and returns the hash of this commit object

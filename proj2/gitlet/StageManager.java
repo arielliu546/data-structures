@@ -1,10 +1,7 @@
 package gitlet;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -30,7 +27,7 @@ public class StageManager implements Serializable {
         return removed;
     }
 
-    public void stage(String filename) throws IOException {
+    public void stage(String filename) {
         staged.add(filename);
         StorageManager.copyToStage(filename);
     }

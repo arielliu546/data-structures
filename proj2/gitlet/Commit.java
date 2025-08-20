@@ -41,7 +41,7 @@ public class Commit implements Serializable {
     final File STAGING_AREA = join(CWD, ".gitlet", "staging_area");
 
     // constructor
-    public Commit(String _message, String _parent, String _secondParent, StageManager sm) throws IOException {
+    public Commit(String _message, String _parent, String _secondParent, StageManager sm) {
 
         Set<String> stagedFiles = sm.getStaged();
         Set<String> removedFiles = sm.getRemoved();
@@ -67,7 +67,7 @@ public class Commit implements Serializable {
     /* add staged files (filename) to tracked files (Blob)
      * also writes to the blob folder with file's hash as name
      * removed files are untracked */
-    private void processStage(StageManager sm) throws IOException {
+    private void processStage(StageManager sm) {
         for (String filename : sm.getStaged()) {
             File file = join(STAGING_AREA, filename); // gets the file from the staging area
             Blob blob = Blob.makeBlob(file);
@@ -82,7 +82,7 @@ public class Commit implements Serializable {
     }
 
     // tracks the blob and writes it
-    private void addToTrack(Blob b) throws IOException {
+    private void addToTrack(Blob b) {
         // in this way, the old value (hash) is automatically replaced
         trackedFiles.put(b.name, b.hash);
         // save the file to the BLOBS_DIR, named as its hash
@@ -138,7 +138,7 @@ public class Commit implements Serializable {
         }
     }
 
-    public void writeAllToWD() throws IOException {
+    public void writeAllToWD() {
         for (String filename : plainFilenamesIn(CWD)) {
             File f = join(CWD, filename);
             restrictedDelete(f);

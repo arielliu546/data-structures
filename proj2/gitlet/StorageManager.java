@@ -46,31 +46,42 @@ class StorageManager {
         }
     }
 
-    public static void copyToStage(String filename) throws IOException {
+    public static void copyToStage(String filename) {
         File f = join(CWD, filename);
         // copy it to the staging folder with filename as its original name
-        Files.copy(f.toPath(),
-                join(STAGING_AREA, filename).toPath(),
-                StandardCopyOption.REPLACE_EXISTING);
+        try {
+            Files.copy(f.toPath(),
+                    join(STAGING_AREA, filename).toPath(),
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /** copy the file blob in the staging area to the blobs folder, named as hash */
-     public static void saveBlob(Blob b) throws IOException {
+     public static void saveBlob(Blob b) {
         // the new file is in the blobs folder, named as its hash
         File newFile = join(BLOBS_DIR, b.hash);
         // it is taken form the staged file with the corresponding name
         File stagedFile = join(STAGING_AREA, b.name);
         // I think even when there was an exact same blob, this still works
-        Files.copy(stagedFile.toPath(), newFile.toPath());
-    }
+         try {
+             Files.copy(stagedFile.toPath(), newFile.toPath());
+         } catch (IOException e) {
+             throw new RuntimeException(e);
+         }
+     }
 
-    public static void writeToWD(File f, String filename) throws IOException {
+    public static void writeToWD(File f, String filename) {
          File newFile = join(CWD, filename);
          if (newFile.exists()) {
              restrictedDelete(newFile);
          }
-        Files.copy(f.toPath(),
-                newFile.toPath());
+         try {
+             Files.copy(f.toPath(), newFile.toPath());
+         } catch (IOException e) {
+             throw new RuntimeException(e);
+         }
     }
 
     public static void saveBranches(File GITLET_DIR, BranchManager bm) {
