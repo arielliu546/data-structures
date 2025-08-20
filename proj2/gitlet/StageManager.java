@@ -36,7 +36,6 @@ public class StageManager implements Serializable {
     }
 
     public void unstage(String filename) {
-        staged.remove(filename);
         File f = join(STAGING_AREA, filename);
         f.delete();
     }
@@ -58,7 +57,12 @@ public class StageManager implements Serializable {
         for (String file : staged) {
             unstage(file);
         }
+        staged.clear();
         removed.clear();
+    }
+
+    public boolean isNull() {
+        return staged.size() + removed.size() == 0;
     }
 
 }

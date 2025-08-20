@@ -1,0 +1,34 @@
+# A simple test of checking out a branch
+I definitions.inc
+> init
+<<<
++ wug.txt wug.txt
++ 1.txt 1.txt
+> add wug.txt
+<<<
+> add 1.txt
+<<<
+> commit "added wug.txt and 1.txt"
+<<<
+> branch "new branch"
+<<<
+> log
+===
+${COMMIT_HEAD}
+added wug.txt and 1.txt
+
+===
+${COMMIT_HEAD}
+initial commit
+
+<<<*
++ wug.txt notwug.txt
+> add wug.txt
+<<<
+> rm 1.txt
+<<<
+> commit "removed 1.txt and edited wug.txt"
+<<<
+> checkout "new branch"
+<<<
+= wug.txt wug.txt

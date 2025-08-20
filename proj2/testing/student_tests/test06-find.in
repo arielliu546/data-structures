@@ -1,0 +1,59 @@
+# A simple test of adding, and finding
+I definitions.inc
+> init
+<<<
+
++ wug.txt wug.txt
+> add wug.txt
+<<<
+
+> commit "added wug.txt"
+<<<
+
++ notwug.txt notwug.txt
+> add notwug.txt
+<<<
+
+> commit "added notwug.txt"
+<<<
+
++ 1.txt 1.txt
+> add 1.txt
+<<<
+
+> commit "added 1.txt"
+<<<
+
++ 2.txt 2.txt
+> add 2.txt
+<<<
+
+> commit "added 2.txt"
+<<<
+
+> log
+===
+${COMMIT_HEAD}
+added 2.txt
+
+===
+${COMMIT_HEAD}
+added 1.txt
+
+===
+${COMMIT_HEAD}
+added notwug.txt
+
+===
+${COMMIT_HEAD}
+added wug.txt
+
+===
+${COMMIT_HEAD}
+initial commit
+
+<<<*
+D NOTWUG "${3}"
+> find notwug
+${NOTWUG}
+<<<*

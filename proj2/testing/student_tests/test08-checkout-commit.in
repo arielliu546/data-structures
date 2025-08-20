@@ -1,0 +1,33 @@
+# A simple test of adding, and finding
+I definitions.inc
+> init
+<<<
++ wug.txt wug.txt
++ 1.txt 1.txt
+> add wug.txt
+<<<
+> commit "added wug.txt"
+<<<
+> rm wug.txt
+<<<
+> commit "removed wug.txt"
+<<<
+
+> log
+===
+${COMMIT_HEAD}
+removed wug.txt
+
+===
+${COMMIT_HEAD}
+added wug.txt
+
+===
+${COMMIT_HEAD}
+initial commit
+
+<<<*
+D UID2 "${2}"
+> checkout ${UID2} -- wug.txt
+<<<*
+= wug.txt wug.txt

@@ -53,7 +53,7 @@ public class Repository {
         stageManager = new StageManager(GITLET_DIR);
 
         // initial commit and also write to file.
-        String initialCommitHash = createCommit("initial commit", null);
+        String initialCommitHash = createCommit("initial commit", null, null);
 
         // moves HEAD to the initial commit
         branchManager.move(initialCommitHash);
@@ -93,7 +93,7 @@ public class Repository {
         }
         // if the file is in the removing area, get it out of there
         stageManager.unremove(b.name);
-        StorageManager.saveStages(GITLET_DIR, stageManager);
+        save(GITLET_DIR, stageManager, branchManager);
     }
 
     /**  Unstage the file if it is currently staged for addition.
@@ -116,7 +116,7 @@ public class Repository {
                 stageManager.remove(b.name);
             }
         }
-        StorageManager.saveStages(GITLET_DIR, stageManager);
+        save(GITLET_DIR, stageManager, branchManager);
     }
 
     // called by the main function
@@ -126,11 +126,11 @@ public class Repository {
             throw new GitletException("Please enter a commit message.");
         }
         // writes the commit and also saves blobs and branches
-        String commitHash = createCommit(m, branchManager.getCurrentHash());
+        String commitHash = createCommit(m, branchManager.getCurrentHash(), null);
         branchManager.move(commitHash);
         // clear staging area and removing area
         stageManager.clear();
-        StorageManager.saveStages(GITLET_DIR, stageManager);
+        save(GITLET_DIR, stageManager, branchManager);
     }
 
     public void log() {
@@ -209,7 +209,7 @@ public class Repository {
         c.writeAllToWD();
         branchManager.switchTo(branchName);
         stageManager.clear();
-        StorageManager.saveStages(GITLET_DIR, stageManager);
+        save(GITLET_DIR, stageManager, branchManager);
     }
 
     /** Creates a new branch with the given name, and points it at the current
@@ -219,6 +219,7 @@ public class Repository {
     public void branch(String branchName) {
         branchManager = StorageManager.readBranches(GITLET_DIR);
         branchManager.createNewBranch(branchName);
+        saveBranches(GITLET_DIR, branchManager);
     }
 
     /**  Deletes the branch with the given name. This only means to delete
@@ -227,6 +228,7 @@ public class Repository {
     public void rmBranch(String branchName) {
         branchManager = StorageManager.readBranches(GITLET_DIR);
         branchManager.remove(branchName);
+        saveBranches(GITLET_DIR, branchManager);
     }
 
     /** Checks out all the files tracked by the given commit. Removes tracked
@@ -244,13 +246,27 @@ public class Repository {
         branchManager.move(commitHash);
         stageManager.clear();
         StorageManager.saveStages(GITLET_DIR, stageManager);
+        save(GITLET_DIR, stageManager, branchManager);
     }
 
     public void merge(String branchName) throws IOException {
         load();
+        if (!stageManager.isNull()) {
+            System.out.println("You have uncommitted changes.");
+            System.exit(0);
+        }
+        if (branchManager.getCommitHash(branchName) == null) {
+            System.out.println("A branch with that name does not exist.");
+            System.exit(0);
+        } else if (branchName.equals(branchManager.getHEAD())) {
+            System.out.println("Cannot merge a branch with itself.");
+            System.exit(0);
+        }
         Commit splitPoint = branchManager.getSplitPoint(branchName);
         Commit currentCommit = StorageManager.getCommitFromHash(branchManager.getCurrentHash());
+        // currentCommit.checkForUntracked();
         Commit givenCommit = StorageManager.getCommitFromHash(branchManager.getCommitHash(branchName));
+        givenCommit.checkForUntracked(branchManager.getCurrentHash());
         if (splitPoint.equals(currentCommit)) {
             System.out.println("Current branch fast-forwarded.");
             checkoutBranch(branchName);
@@ -259,7 +275,14 @@ public class Repository {
             System.out.println("Given branch is an ancestor of the current branch.");
             System.exit(0);
         }
-        processMerge(currentCommit, givenCommit, splitPoint);
+        boolean hasConflict = processMerge(currentCommit, givenCommit, splitPoint);
+        createCommit("Merged " + branchName + " into " + branchManager.getHEAD() + ".",
+                branchManager.getCurrentHash(),
+                branchManager.getCommitHash(branchName));
+        if (hasConflict) {
+            System.out.println("Encountered a merge conflict.");
+        }
+        save(GITLET_DIR, stageManager, branchManager);
     }
 
     /** split           current         given       status
@@ -275,10 +298,11 @@ public class Repository {
      *  present         one is deleted, on is modified
      *  absent          same name, differs
      * */
-    private void processMerge(Commit current, Commit given, Commit split) throws IOException {
+    private boolean processMerge(Commit current, Commit given, Commit split) throws IOException {
         Map<String, String> splitTracked = split.getAllTracked();
         Map<String, String> currentTracked = current.getAllTracked();
         Map<String, String> givenTracked = given.getAllTracked();
+        boolean res = false;
 
         // for every file in the current commit
         for (String file : currentTracked.keySet()) {
@@ -301,16 +325,14 @@ public class Repository {
                         break;
                     }
                 } else if (gHash == null || !gHash.equals(cHash)) { // case -3
-                    File newf = cat(file, current, given);
-                    StorageManager.writeToWD(newf, file);
-                    stageManager.stage(file);
+                    handleConflict(file, current, given);
+                    res = true;
                 }
             } else { // when the file was absent in split
                 if (cHash != null) {
-                    if (!sHash.equals(cHash)) {
-                        File newf = cat(file, current, given);
-                        StorageManager.writeToWD(newf, file);
-                        stageManager.stage(file);
+                    if (!cHash.equals(gHash)) {
+                        handleConflict(file, current, given);
+                        res = true;
                     }
                 }
             }
@@ -325,13 +347,18 @@ public class Repository {
                 File fileToAdd = given.getBlob(file);
                 StorageManager.writeToWD(fileToAdd, file);
                 stageManager.stage(file);
-            }
-            if (cHash == null && sHash != null && !sHash.equals(gHash)) {
-                File newf = cat(file, current, given);
-                StorageManager.writeToWD(newf, file);
-                stageManager.stage(file);
+            } else if (cHash == null && !sHash.equals(gHash)) {
+                handleConflict(file, current, given);
+                res = true;
             }
         }
+        return res;
+    }
+
+    private void handleConflict(String file, Commit current, Commit given) throws IOException {
+        File newf = cat(file, current, given);
+        StorageManager.writeToWD(newf, file);
+        stageManager.stage(file);
     }
 
     private File cat(String filename, Commit current, Commit given) {
@@ -351,9 +378,9 @@ public class Repository {
 
     // commits with message and parent info. writes to file
     /* creates the commit object, save it and get its hash */
-    private String createCommit(String _message, String _parent) throws IOException {
+    private String createCommit(String _message, String _parent, String _secondParent) throws IOException {
         // create new commit object
-        Commit commit = new Commit(_message, _parent, stageManager);
+        Commit commit = new Commit(_message, _parent, _secondParent, stageManager);
         // saves this commit and returns the hash of this commit object
         String commitHash = saveCommit(commit);
         // move HEAD's pointing branch

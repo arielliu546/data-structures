@@ -41,7 +41,7 @@ public class Commit implements Serializable {
     final File STAGING_AREA = join(CWD, ".gitlet", "staging_area");
 
     // constructor
-    public Commit(String _message, String _parent, StageManager sm) throws IOException {
+    public Commit(String _message, String _parent, String _secondParent, StageManager sm) throws IOException {
 
         Set<String> stagedFiles = sm.getStaged();
         Set<String> removedFiles = sm.getRemoved();

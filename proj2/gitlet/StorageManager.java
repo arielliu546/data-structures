@@ -28,7 +28,7 @@ class StorageManager {
     // turns out there's this useful function in utils!
     public static String getFileHash(File f) {
         byte[] b = readContents(f);
-        return sha1(b);
+        return sha1(f.getName(), b);
     }
 
     public static String getHash(Serializable o) {
@@ -101,4 +101,8 @@ class StorageManager {
         }
     }
 
+    public static void save(File GITLET_DIR, StageManager sm, BranchManager bm) {
+         saveStages(GITLET_DIR, sm);
+         saveBranches(GITLET_DIR, bm);
+    }
 }

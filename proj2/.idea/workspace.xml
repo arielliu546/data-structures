@@ -5,11 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="844e0cae-e4cb-46c3-84d9-7032a93d0060" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/testing/src/1.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../lab6/capers/Dog.java" beforeDir="false" afterPath="$PROJECT_DIR$/../lab6/capers/Dog.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/BranchManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/BranchManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Commit.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Commit.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Commit.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Commit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/Repository.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Repository.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/Repository.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/Repository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/StageManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/StageManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/StageManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/StageManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gitlet/StorageManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/StorageManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gitlet/StorageManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/gitlet/StorageManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/samples/test05-remove.in" beforeDir="false" afterPath="$PROJECT_DIR$/testing/student_tests/test05-remove.in" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,9 +54,17 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
     "settings.editor.selected.configurable": "MavenSettings"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/testing/student_tests" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="gitlet remote" type="Remote">
       <module name="proj2" />
@@ -76,10 +94,14 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/gitlet/Main.java</url>
-          <line>22</line>
-          <option name="timeStamp" value="4" />
+          <line>15</line>
+          <properties class="gitlet.Main" method="main">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="7" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

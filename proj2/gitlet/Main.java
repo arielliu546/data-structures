@@ -58,14 +58,14 @@ public class Main {
                 break;
 
             case "checkout":
-                if (args[1].equals("--")) {
+                if (args.length == 3) {
                     String filename = args[2];
                     repo.checkoutFile(null, filename);
-                } else if (args[2].equals("--")){
+                } else if (args.length == 4) {
                     String commitHash = args[1];
                     String filename = args[3];
                     repo.checkoutFile(commitHash, filename);
-                } else {
+                } else if (args.length == 2) {
                     repo.checkoutBranch(args[1]);
                 }
                 break;

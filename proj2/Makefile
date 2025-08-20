@@ -32,7 +32,6 @@ RMAKE = "$(MAKE)"
 
 default:
 	$(RMAKE) -C $(PACKAGE) default
-	rm -f .gitlet
 
 check: default
 	$(RMAKE) -C testing PYTHON=$(PYTHON) TESTER_FLAGS="$(TESTER_FLAGS)" check
@@ -44,3 +43,48 @@ clean:
 	$(RMAKE) -C testing clean
 	rm -r .gitlet
 
+test-find:
+	java gitlet.Main init
+	java gitlet.Main add wug.txt
+	java gitlet.Main commit "added wug.txt"
+	java gitlet.Main add 1.txt
+	java gitlet.Main commit "added 1.txt"
+	java gitlet.Main log
+	java gitlet.Main find add
+
+test-status:
+	make clean
+	make
+	java gitlet.Main init
+	java gitlet.Main add wug.txt
+	java gitlet.Main status
+	java gitlet.Main add 1.txt
+	java gitlet.Main commit "added 1.txt"
+	java gitlet.Main status
+	java gitlet.Main branch "new branch"
+	java gitlet.Main branch "another branch"
+	java gitlet.Main status
+	java gitlet.Main rm 1.txt
+	java gitlet.Main status
+
+test-checkout:
+	make clean
+	make
+	java gitlet.Main init
+	java gitlet.Main add wug.txt
+	java gitlet.Main commit "added wug.txt"
+	echo "haha i'm the breaker" > wug.txt
+	java gitlet.Main checkout -- wug.txt
+	java gitlet.Main add 2.txt
+	java gitlet.Main commit "the second commit"
+	echo "haha i'm the breaker" > wug.txt
+	java gitlet.Main log
+
+test-test07:
+	make
+	java gitlet.Main init
+	java gitlet.Main add wug.txt
+	java gitlet.Main commit "added wug.txt"
+	java gitlet.Main rm wug.txt
+	java gitlet.Main commit "removed wug.txt"
+	java gitlet.Main log
