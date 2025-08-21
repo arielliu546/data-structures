@@ -1,25 +1,21 @@
 package gitlet;
 
-// TODO: any imports you need here
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.util.Date; // TODO: You'll likely use this in this class
+import java.util.Date; 
 import java.util.*;
 
 import static gitlet.Utils.*;
 
 /** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class
+ *  It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
  *  @author Ariel
  */
 public class Commit implements Serializable {
     /**
-     * TODO: add instance variables here.
      *
      * List all instance variables of the Commit class here with a useful
      * comment above them describing what that variable represents and how that
@@ -41,13 +37,14 @@ public class Commit implements Serializable {
     final File STAGING_AREA = join(CWD, ".gitlet", "staging_area");
 
     // constructor
-    public Commit(String _message, String _parent, String _secondParent, StageManager sm) {
+    public Commit(String m, String p, String sd, StageManager sm) {
 
         Set<String> stagedFiles = sm.getStaged();
         Set<String> removedFiles = sm.getRemoved();
 
-        message = _message;
-        parent = _parent;
+        message = m;
+        parent = p;
+        secondParent = sd;
         // handles the initialize case
         if (parent == null) {
             // this means that this is the initial commit
@@ -56,7 +53,8 @@ public class Commit implements Serializable {
             trackedFiles = new HashMap<>();
         } else {
             if (stagedFiles.isEmpty() && removedFiles.isEmpty()) {
-                throw new GitletException("No changes added to the commit.");
+                message("No changes added to the commit.");
+                System.exit(0);
             }
             timeStamp = new Date();
             trackedFiles = StorageManager.getCommitFromHash(parent).trackedFiles;
@@ -99,6 +97,13 @@ public class Commit implements Serializable {
         return false;
     }
 
+    // if files related to the current commit already includes the file blob (name, hash), return True
+    // O(1)
+    public boolean contains(String filename) {
+        String storedHash = trackedFiles.get(filename);
+        return storedHash != null;
+    }
+
     // returns the tracked file with the given name
     public File getBlob(String filename) {
         String fileHash = trackedFiles.get(filename);
@@ -127,13 +132,12 @@ public class Commit implements Serializable {
             File f = join(CWD, fileInWD);
             Blob b = new Blob(fileInWD, StorageManager.getFileHash(f));
             // if the file is untracked, aka if the blob is not tracked
-            if (!oldC.contains(b)) {
+            if (!oldC.contains(b) && !contains(b)) {
                 /* if the file will be overwritten (modified or deleted),
                 aka the blob is not in the checked out commit */
-                if (!contains(b)){
-                    throw new GitletException("There is an untracked file in the way; " +
-                            "delete it, or add and commit it first.");
-                }
+                message("There is an untracked file in the way; "
+                        + "delete it, or add and commit it first.");
+                System.exit(0);
             }
         }
     }

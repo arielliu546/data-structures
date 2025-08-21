@@ -1,12 +1,7 @@
 package gitlet;
 
-import java.io.File;
-import java.io.IOException;
-
-import static gitlet.Utils.*;
-
 /** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author TODO
+ *  @author Ariel
  */
 public class Main {
 
@@ -22,7 +17,7 @@ public class Main {
         /* Gets the first argument. */
         String firstArg = args[0];
         Repository repo = new Repository();
-        switch(firstArg) {
+        switch (firstArg) {
 
             case "init":
                 repo.init();
@@ -84,6 +79,11 @@ public class Main {
 
             case "merge":
                 repo.merge(args[1]);
+                break;
+
+            default:
+                System.out.println("Wrong command!");
+                System.exit(0);
                 break;
         }
     }

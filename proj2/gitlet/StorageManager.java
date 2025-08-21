@@ -42,8 +42,10 @@ class StorageManager {
         if (f.exists()) {
             return readObject(f, Commit.class);
         } else {
-            throw new GitletException("No commit with that id exists.");
+            message("No commit with that id exists.");
+            System.exit(0);
         }
+        return null;
     }
 
     public static void copyToStage(String filename) {
@@ -59,48 +61,48 @@ class StorageManager {
     }
 
     /** copy the file blob in the staging area to the blobs folder, named as hash */
-     public static void saveBlob(Blob b) {
+    public static void saveBlob(Blob b) {
         // the new file is in the blobs folder, named as its hash
         File newFile = join(BLOBS_DIR, b.hash);
         // it is taken form the staged file with the corresponding name
         File stagedFile = join(STAGING_AREA, b.name);
         // I think even when there was an exact same blob, this still works
-         try {
-             Files.copy(stagedFile.toPath(), newFile.toPath());
-         } catch (IOException e) {
-             throw new RuntimeException(e);
-         }
-     }
-
-    public static void writeToWD(File f, String filename) {
-         File newFile = join(CWD, filename);
-         if (newFile.exists()) {
-             restrictedDelete(newFile);
-         }
-         try {
-             Files.copy(f.toPath(), newFile.toPath());
-         } catch (IOException e) {
-             throw new RuntimeException(e);
-         }
+        try {
+            Files.copy(stagedFile.toPath(), newFile.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static void saveBranches(File GITLET_DIR, BranchManager bm) {
-        File f = join(GITLET_DIR, "branches");
+    public static void writeToWD(File f, String filename) {
+        File newFile = join(CWD, filename);
+        if (newFile.exists()) {
+            restrictedDelete(newFile);
+        }
+        try {
+            Files.copy(f.toPath(), newFile.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void saveBranches(File gitDir, BranchManager bm) {
+        File f = join(gitDir, "branches");
         writeObject(f, bm);
     }
 
-    public static BranchManager readBranches(File GITLET_DIR) {
-        File f = join(GITLET_DIR, "branches");
+    public static BranchManager readBranches(File gitDir) {
+        File f = join(gitDir, "branches");
         return readObject(f, BranchManager.class);
     }
 
-    public static void saveStages(File GITLET_DIR, StageManager sm) {
-        File f = join(GITLET_DIR, "stages");
+    public static void saveStages(File gitDir, StageManager sm) {
+        File f = join(gitDir, "stages");
         writeObject(f, sm);
     }
 
-    public static StageManager readStage(File GITLET_DIR) {
-        File f = join(GITLET_DIR, "stages");
+    public static StageManager readStage(File gitDir) {
+        File f = join(gitDir, "stages");
         return readObject(f, StageManager.class);
     }
 
@@ -113,7 +115,7 @@ class StorageManager {
     }
 
     public static void save(File GITLET_DIR, StageManager sm, BranchManager bm) {
-         saveStages(GITLET_DIR, sm);
-         saveBranches(GITLET_DIR, bm);
+        saveStages(GITLET_DIR, sm);
+        saveBranches(GITLET_DIR, bm);
     }
 }

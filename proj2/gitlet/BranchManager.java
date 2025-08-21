@@ -3,10 +3,9 @@ package gitlet;
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.TreeMap;
 
-import static gitlet.Utils.join;
+import static gitlet.Utils.*;
 
 public class BranchManager implements Serializable {
     private String HEAD;
@@ -14,8 +13,8 @@ public class BranchManager implements Serializable {
     private final File branchf;
 
 
-    public BranchManager(File GIT_DIR) {
-        branchf = join(GIT_DIR, "branches");
+    public BranchManager(File gitDir) {
+        branchf = join(gitDir, "branches");
         branches = new TreeMap<>();
         HEAD = "master";
         branches.put(HEAD, null);
@@ -23,17 +22,20 @@ public class BranchManager implements Serializable {
 
     public void createNewBranch(String name) {
         if (branches.containsKey(name)) {
-            throw new GitletException("A branch with that name already exists.");
+            message("A branch with that name already exists.");
+            System.exit(0);
         }
         branches.put(name, getCurrentHash());
     }
 
     public void remove(String name) {
         if (name.equals(HEAD)) {
-            throw new GitletException("Cannot remove the current branch.");
+            message("Cannot remove the current branch.");
+            System.exit(0);
         }
         if (branches.remove(name) == null) {
-            throw new GitletException("A branch with that name does not exist.");
+            message("A branch with that name does not exist.");
+            System.exit(0);
         }
     }
 
@@ -43,7 +45,8 @@ public class BranchManager implements Serializable {
 
     public void switchTo(String branchName) {
         if (!branches.containsKey(branchName)) {
-            throw new GitletException("No such branch exists.");
+            message("No such branch exists.");
+            System.exit(0);
         }
         HEAD = branchName;
     }

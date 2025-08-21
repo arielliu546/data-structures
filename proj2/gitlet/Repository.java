@@ -8,10 +8,9 @@ import java.util.*;
 import static gitlet.StorageManager.*;
 import static gitlet.Utils.*;
 
-// TODO: any imports you need here
 
 /** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class
+ *  It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
  *  @author Ariel
@@ -42,7 +41,8 @@ public class Repository {
     public void init() {
         // first of course we need the folders
         if (GITLET_DIR.exists()) {
-            throw new GitletException("A Gitlet version-control system already exists in the current directory.");
+            message("A Gitlet version-control system already exists in the current directory.");
+            System.exit(0);
         }
 
         initializeFolders();
@@ -77,7 +77,8 @@ public class Repository {
         // first, make sure the file exists in the working directory
         File f = join(CWD, filename);
         if (!f.exists()) {
-            throw new GitletException("File does not exist.");
+            message("File does not exist.");
+            System.exit(0);
         }
         // create new blob out of it (blob stores the file name with the hash code)
         Blob b = new Blob(filename, StorageManager.getFileHash(f));
@@ -101,19 +102,15 @@ public class Repository {
      * the user has not already done so (do not remove it unless
      * it is tracked in the current commit). */
     public void remove(String filename) {
-        File f = join(CWD, filename);
-        Blob b = new Blob(filename, StorageManager.getFileHash(f));
         load();
         Commit currentCommit = StorageManager.getCommitFromHash(branchManager.getCurrentHash());
-        if (!stageManager.isStaged(filename) && !currentCommit.contains(b)) {
-            throw new GitletException("No reason to remove the file.");
+        if (stageManager.isStaged(filename)) {
+            stageManager.unstage(filename);
+        } else if (currentCommit.contains(filename)) {
+            stageManager.remove(filename);
         } else {
-            if (stageManager.isStaged(filename)) {
-                stageManager.unstage(filename);
-            }
-            if (currentCommit.contains(b)) {
-                stageManager.remove(b.name);
-            }
+            message("No reason to remove the file.");
+            System.exit(0);
         }
         save(GITLET_DIR, stageManager, branchManager);
     }
@@ -122,7 +119,8 @@ public class Repository {
     public void commitFromMain(String m) {
         load();
         if (m == null) {
-            throw new GitletException("Please enter a commit message.");
+            message("Please enter a commit message.");
+            System.exit(0);
         }
         // writes the commit and also saves blobs and branches
         String commitHash = createCommit(m, branchManager.getCurrentHash(), null);
@@ -183,7 +181,8 @@ public class Repository {
         Commit c = StorageManager.getCommitFromHash(commitHash);
         File fileToRead = c.getBlob(filename);
         if (fileToRead == null) {
-            throw new GitletException("File does not exist in that commit.");
+            message("File does not exist in that commit.");
+            System.exit(0);
         }
         StorageManager.writeToWD(fileToRead, filename);
     }
@@ -197,11 +196,13 @@ public class Repository {
     public void checkoutBranch(String branchName) {
         load();
         if (branchName.equals(branchManager.getHEAD())) {
-            throw new GitletException("No need to checkout the current branch.");
+            message("No need to checkout the current branch.");
+            System.exit(0);
         }
         String commitHash = branchManager.getCommitHash(branchName);
         if (commitHash == null) {
-            throw new GitletException("No such branch exists.");
+            message("No such branch exists.");
+            System.exit(0);
         }
         Commit c = StorageManager.getCommitFromHash(commitHash);
         c.checkForUntracked(branchManager.getCurrentHash());
@@ -377,9 +378,9 @@ public class Repository {
 
     // commits with message and parent info. writes to file
     /* creates the commit object, save it and get its hash */
-    private String createCommit(String _message, String _parent, String _secondParent) {
+    private String createCommit(String m, String p, String sp) {
         // create new commit object
-        Commit commit = new Commit(_message, _parent, _secondParent, stageManager);
+        Commit commit = new Commit(m, p, sp, stageManager);
         // saves this commit and returns the hash of this commit object
         String commitHash = saveCommit(commit);
         // move HEAD's pointing branch

@@ -1,9 +1,5 @@
 package gitlet;
 
-import java.io.File;
-
-import static gitlet.Utils.join;
-
 public class StatusPrinter {
     public static void print(StageManager sm, BranchManager bm) {
         printBranches(bm);

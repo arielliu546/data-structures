@@ -1,11 +1,11 @@
 package gitlet;
 
 public class Branch {
-    public String name;
-    public String hash;
+    private String name;
+    private String hash;
 
-    public Branch(String _name, String _hash) {
-        name = _name;
-        hash = _hash;
+    public Branch(String n, String h) {
+        name = n;
+        hash = h;
     }
 }

@@ -1,16 +1,27 @@
 # A simple test of adding, removing, committing, and removing.
+I definitions.inc
 > init
 <<<
 + wug.txt wug.txt
++ notwug.txt notwug.txt
 > add wug.txt
+<<<
+> add notwug.txt
 <<<
 > rm wug.txt
 <<<
-E wug.txt
-> add wug.txt
-<<<
-> commit "added wug.txt"
-<<<
-> rm wug.txt
-<<<
-* wug.txt
+> status
+=== Branches ===
+\*master
+
+=== Staged Files ===
+notwug.txt
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+${ARBLINES}
+
+<<<*
